@@ -1,10 +1,5 @@
 package pl.ncdchot.foosball;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,37 +20,17 @@ public class NormalGameViewController extends GameViewController {
 
 	final static int SCORE_LIMIT = 10;
 
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // scheduler for timer
-	private ScheduledFuture<?> timerHandle;
-
 	@Autowired
 	NormalGameViewController(SocketHandler websock) {
 		game = new NormalGameState();
 		this.websock = websock;
 	}
 
-	private void sendGameWithWebsocket() {
-		websock.sendMessageToAllClients(getAsWebSocketMessage(game));
-	}
-	
-	private void finishGame() {
-		game.setFinished(true);
-		timerHandle.cancel(true);
-	}
-
 	@GetMapping(value = "/start")
 	@ResponseBody
-	public ResponseEntity<GameState> startGame() {
+	public ResponseEntity<GameState> startGameEndpoint() {
 
-		game.resetScore();
-		game.setFinished(false);
-		game.restartTimer();
-
-		// Send current state with websocket every 5 seconds for time sync
-		if(timerHandle!=null && !timerHandle.isCancelled()) {
-			timerHandle.cancel(true);
-		}
-		timerHandle = scheduler.scheduleAtFixedRate(() -> sendGameWithWebsocket(), 5, 5, TimeUnit.SECONDS);
+		startGame();
 
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
