@@ -20,6 +20,11 @@ public abstract class GameViewController {
 
 	protected GameState game;
 
+	protected int redTeamLongestSeries;
+	protected int blueTeamLongestSeries;
+	private int currentSeries;
+	private TeamColor lastGoalBy;
+
 	@Autowired
 	protected SocketHandler websock;
 
@@ -33,6 +38,11 @@ public abstract class GameViewController {
 		game.resetScore();
 		game.setFinished(false);
 		game.restartTimer();
+
+		redTeamLongestSeries = 0;
+		blueTeamLongestSeries = 0;
+		currentSeries = 0;
+		lastGoalBy = TeamColor.RED;
 
 		// Send current state with websocket every 5 seconds for time sync
 		if (timerHandle != null && !timerHandle.isCancelled()) {
@@ -56,6 +66,20 @@ public abstract class GameViewController {
 		} else {
 			game.incrementBlue();
 		}
+
+		if (team == lastGoalBy) {
+			currentSeries++;
+		} else {
+			currentSeries = 1;
+		}
+
+		if (team.equals(TeamColor.BLUE)) {
+			blueTeamLongestSeries = Math.max(currentSeries, blueTeamLongestSeries);
+		} else {
+			redTeamLongestSeries = Math.max(currentSeries, redTeamLongestSeries);
+		}
+
+		lastGoalBy = team;
 	}
 
 	protected WebSocketMessage<String> getAsWebSocketMessage(Object o) {

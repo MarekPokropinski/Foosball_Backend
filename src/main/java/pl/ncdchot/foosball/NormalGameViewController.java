@@ -60,8 +60,8 @@ public class NormalGameViewController extends GameViewController {
 		
 		stats.setRedScore(game.getRedScore());
 		stats.setBlueScore(game.getBlueScore());
-		stats.setBlueLongestSeries(0);
-		stats.setRedLongestSeries(0);
+		stats.setBlueLongestSeries(blueTeamLongestSeries);
+		stats.setRedLongestSeries(redTeamLongestSeries);
 		stats.setGameTime(game.getGameTime());
 		
 		finishGame();
