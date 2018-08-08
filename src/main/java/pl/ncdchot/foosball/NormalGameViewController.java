@@ -52,6 +52,9 @@ public class NormalGameViewController extends GameViewController {
 		game.restartTimer();
 
 		// Send current state with websocket every 5 seconds for time sync
+		if(timerHandle!=null && !timerHandle.isCancelled()) {
+			timerHandle.cancel(true);
+		}
 		timerHandle = scheduler.scheduleAtFixedRate(() -> sendGameWithWebsocket(), 5, 5, TimeUnit.SECONDS);
 
 		sendGameWithWebsocket();
