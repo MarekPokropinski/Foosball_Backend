@@ -19,6 +19,8 @@ import pl.ncdchot.foosball.webSockets.SocketHandler;
 public abstract class GameViewController {
 
 	protected GameState game;
+	
+	protected int scoreLimit;
 
 	@Autowired
 	protected SocketHandler websock;
