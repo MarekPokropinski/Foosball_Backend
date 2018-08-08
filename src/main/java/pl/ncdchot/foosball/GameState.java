@@ -5,6 +5,9 @@ public class GameState {
 	protected int redScore;
 	protected int blueScore;
 	boolean finished = false;
+	long gameTime;
+	
+	long gameStartTime;
 
 	public int getRedScore() {
 		return redScore;
@@ -42,4 +45,12 @@ public class GameState {
 		this.finished = finished;
 	}
 
+	public long getGameTime() {
+		gameTime = System.currentTimeMillis() - gameStartTime;
+		return gameTime;
+	}
+	public void restartTimer() {
+		gameTime = 0;
+		gameStartTime = System.currentTimeMillis();
+	}
 }

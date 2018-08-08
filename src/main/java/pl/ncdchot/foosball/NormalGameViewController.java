@@ -26,16 +26,12 @@ public class NormalGameViewController extends GameViewController {
 		this.websock = websock;
 	}
 
-	private void sendGameWithWebsocket() {
-		websock.sendMessageToAllClients(getAsWebSocketMessage(game));
-	}
-
 	@GetMapping(value = "/start")
 	@ResponseBody
-	public ResponseEntity<GameState> startGame() {
+	public ResponseEntity<GameState> startGameEndpoint() {
 
-		game.resetScore();
-		game.setFinished(false);
+		startGame();
+
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
 	}
@@ -51,7 +47,7 @@ public class NormalGameViewController extends GameViewController {
 		incrementScore(team);
 
 		if (game.getBlueScore() >= SCORE_LIMIT || game.getRedScore() >= SCORE_LIMIT) {
-			game.setFinished(true);
+			finishGame();
 		}
 		sendGameWithWebsocket();
 
