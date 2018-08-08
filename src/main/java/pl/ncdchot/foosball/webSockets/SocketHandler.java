@@ -14,28 +14,28 @@ public class SocketHandler extends TextWebSocketHandler {
 	private List<WebSocketSession> sessionList = new ArrayList<>();
 
 	public void sendMessageToAllClients(WebSocketMessage<String> message) {
-		
+
 		List<WebSocketSession> toRemove = new ArrayList<>();
-		
+
 		for (WebSocketSession client : sessionList) {
 			try {
 				client.sendMessage(message);
 			} catch (IOException e) {
-				//TODO: Log this
+				// TODO: Log this
 				System.out.println("Failed to send message");
 				toRemove.add(client);
-			}			
+			}
 		}
 		for (WebSocketSession client : toRemove) {
 			sessionList.remove(client);
-		}		
+		}
 	}
-		
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
 		sessionList.add(session);
 	}
+
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
 		sessionList.remove(session);
