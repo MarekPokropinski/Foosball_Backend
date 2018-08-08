@@ -1,5 +1,10 @@
 package pl.ncdchot.foosball;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +25,9 @@ public class NormalGameViewController extends GameViewController {
 
 	final static int SCORE_LIMIT = 10;
 
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // scheduler for timer
+	private ScheduledFuture<?> timerHandle;
+
 	@Autowired
 	NormalGameViewController(SocketHandler websock) {
 		game = new NormalGameState();
@@ -29,6 +37,11 @@ public class NormalGameViewController extends GameViewController {
 	private void sendGameWithWebsocket() {
 		websock.sendMessageToAllClients(getAsWebSocketMessage(game));
 	}
+	
+	private void finishGame() {
+		game.setFinished(true);
+		timerHandle.cancel(true);
+	}
 
 	@GetMapping(value = "/start")
 	@ResponseBody
@@ -36,6 +49,11 @@ public class NormalGameViewController extends GameViewController {
 
 		game.resetScore();
 		game.setFinished(false);
+		game.restartTimer();
+
+		// Send current state with websocket every 5 seconds for time sync
+		timerHandle = scheduler.scheduleAtFixedRate(() -> sendGameWithWebsocket(), 5, 5, TimeUnit.SECONDS);
+
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
 	}
@@ -51,7 +69,7 @@ public class NormalGameViewController extends GameViewController {
 		incrementScore(team);
 
 		if (game.getBlueScore() >= SCORE_LIMIT || game.getRedScore() >= SCORE_LIMIT) {
-			game.setFinished(true);
+			finishGame();
 		}
 		sendGameWithWebsocket();
 
