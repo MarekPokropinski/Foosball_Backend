@@ -53,4 +53,18 @@ public class NormalGameViewController extends GameViewController {
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	@GetMapping("/stats")
+	@ResponseBody
+	public ResponseEntity<GameStats> statistics() {
+		GameStats stats = new GameStats();
+		
+		stats.setRedScore(-1);
+		stats.setBlueScore(-1);
+		stats.setBlueLongestSeries(0);
+		stats.setRedLongestSeries(-1);
+		stats.setGameTime(100);
+		
+		return new ResponseEntity<>(stats,HttpStatus.OK);
+	}
+	
 }
