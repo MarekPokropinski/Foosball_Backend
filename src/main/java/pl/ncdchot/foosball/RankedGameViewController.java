@@ -1,5 +1,7 @@
 package pl.ncdchot.foosball;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ public class RankedGameViewController extends GameViewController {
 
 	private int playerCount;
 	private RankedGameState rankedGame;
+	
+	static final private long timeLimit = 30;
 
 	@Autowired
 	RankedGameViewController(SocketHandler websock) {
@@ -48,10 +52,14 @@ public class RankedGameViewController extends GameViewController {
 
 		rankedGame.setBlueTeamIds(blueTeamIds);
 		rankedGame.setRedTeamIds(redTeamIds);
+		
+		scheduler.schedule(()->this.finishGame(),timeLimit,TimeUnit.SECONDS); // Schedule game finish after given time
 
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
 	}
+	
+	
 
 	@PostMapping("/goal")
 	@ResponseBody

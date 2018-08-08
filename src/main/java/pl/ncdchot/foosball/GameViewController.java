@@ -19,7 +19,7 @@ import pl.ncdchot.foosball.webSockets.SocketHandler;
 public abstract class GameViewController {
 
 	protected GameState game;
-	
+
 	protected int scoreLimit;
 
 	@Autowired
@@ -28,7 +28,7 @@ public abstract class GameViewController {
 	@Autowired
 	private ObjectMapper mapper;
 
-	protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // scheduler for timer
+	protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2); // scheduler for timers
 	protected ScheduledFuture<?> timerHandle;
 
 	protected void startGame() {
@@ -45,6 +45,7 @@ public abstract class GameViewController {
 
 	protected void finishGame() {
 		game.setFinished(true);
+		sendGameWithWebsocket();
 		timerHandle.cancel(true);
 	}
 
