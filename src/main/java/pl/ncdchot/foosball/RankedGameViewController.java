@@ -21,8 +21,8 @@ public class RankedGameViewController extends GameViewController {
 
 	private int playerCount;
 	private RankedGameState rankedGame;
-	
-	static final private long timeLimit = 30;
+
+	static final private long timeLimit = 3; // Time limit in minutes
 
 	@Autowired
 	RankedGameViewController(SocketHandler websock) {
@@ -35,38 +35,34 @@ public class RankedGameViewController extends GameViewController {
 
 	@PostMapping(value = "/start")
 	@ResponseBody
-	public ResponseEntity<GameState> startGameEndpoint(@RequestBody long[] redTeamIds,
-			@RequestBody long[] blueTeamIds) {
+	public ResponseEntity<GameState> startGameEndpoint(@RequestBody long[] playersIds) {
 
 		startGame();
 
-		playerCount = redTeamIds.length + blueTeamIds.length;
+		playerCount = playersIds.length;
 
-		if (redTeamIds.length != blueTeamIds.length) {
+		if (playerCount == 2) {
+			rankedGame.setBlueTeamIds(new long[] { playersIds[0] });
+			rankedGame.setRedTeamIds(new long[] { playersIds[1] });
+		} else if (playerCount == 4) {
+			rankedGame.setBlueTeamIds(new long[] { playersIds[0], playersIds[1] });
+			rankedGame.setRedTeamIds(new long[] { playersIds[2], playersIds[3] });
+		} else {
 			return new ResponseEntity<>(game, HttpStatus.BAD_REQUEST);
 		}
 
-		if (playerCount != 2 && playerCount != 4) {
-			return new ResponseEntity<>(game, HttpStatus.BAD_REQUEST);
-		}
-
-		rankedGame.setBlueTeamIds(blueTeamIds);
-		rankedGame.setRedTeamIds(redTeamIds);
-		
-		scheduler.schedule(()->this.finishGame(),timeLimit,TimeUnit.SECONDS); // Schedule game finish after given time
+		scheduler.schedule(() -> this.finishGame(), timeLimit, TimeUnit.MINUTES); // Schedule game finish after given time
 
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
 	}
-	
-	
 
 	@PostMapping("/goal")
 	@ResponseBody
-	public ResponseEntity<HttpStatus> goal(@RequestBody TeamColor team) {
+	public ResponseEntity<String> goal(@RequestBody TeamColor team) {
 
 		if (game.isFinished()) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Game is already finished",HttpStatus.BAD_REQUEST);
 		}
 
 		incrementScore(team);
@@ -76,6 +72,6 @@ public class RankedGameViewController extends GameViewController {
 		}
 		sendGameWithWebsocket();
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>("OK",HttpStatus.OK);
 	}
 }
