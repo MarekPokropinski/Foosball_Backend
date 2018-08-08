@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import pl.ncdchot.foosball.webSockets.SocketHandler;
 
-
-
 @Controller
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/normalGame")
 public class NormalGameViewController extends GameViewController {
-	
+
 	final static int SCORE_LIMIT = 10;
 
 	@Autowired
@@ -27,16 +25,20 @@ public class NormalGameViewController extends GameViewController {
 		game = new NormalGameState();
 		this.websock = websock;
 	}
-	
+
+	private void sendGameWithWebsocket() {
+		websock.sendMessageToAllClients(getAsWebSocketMessage(game));
+	}
+
 	@GetMapping(value = "/start")
 	@ResponseBody
 	public ResponseEntity<GameState> startGame() {
 
 		game.resetScore();
 		game.setFinished(false);
+		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
 	}
-	
 
 	@PostMapping("/goal")
 	@ResponseBody
@@ -51,10 +53,8 @@ public class NormalGameViewController extends GameViewController {
 		if (game.getBlueScore() >= SCORE_LIMIT || game.getRedScore() >= SCORE_LIMIT) {
 			game.setFinished(true);
 		}
-		
-		websock.sendMessageToAllClients(getAsWebSocketMessage(game));
+		sendGameWithWebsocket();
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
 }
