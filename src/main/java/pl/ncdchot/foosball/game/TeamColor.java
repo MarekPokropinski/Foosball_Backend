@@ -1,4 +1,4 @@
-package pl.ncdchot.foosball;
+package pl.ncdchot.foosball.game;
 
 public enum TeamColor {
 	RED, BLUE;

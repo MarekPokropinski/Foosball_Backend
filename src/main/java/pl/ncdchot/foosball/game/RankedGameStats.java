@@ -1,4 +1,4 @@
-package pl.ncdchot.foosball;
+package pl.ncdchot.foosball.game;
 
 public class RankedGameStats extends GameStats {
 	String[] redTeamNames;
