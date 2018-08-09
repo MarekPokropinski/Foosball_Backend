@@ -15,22 +15,38 @@ import pl.ncdchot.foosball.webSockets.SocketHandler;
 
 @Controller
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/normalGame")
-public class NormalGameViewController extends GameViewController {
+@RequestMapping(path = "/rankedGame")
+public class RankedGameViewController extends GameViewController {
+
+	private int playerCount;
+	private RankedGameState rankedGame;
 
 	@Autowired
-	NormalGameViewController(SocketHandler websock) {
-		game = new NormalGameState();
+	RankedGameViewController(SocketHandler websock) {
+		rankedGame = new RankedGameState();
+		game = rankedGame;
 		this.websock = websock;
 
 		scoreLimit = 10;
 	}
 
-	@GetMapping(value = "/start")
+	@PostMapping(value = "/start")
 	@ResponseBody
-	public ResponseEntity<GameState> startGameEndpoint() {
+	public ResponseEntity<GameState> startGameEndpoint(@RequestBody long[] playersIds) {
 
 		startGame();
+
+		playerCount = playersIds.length;
+
+		if (playerCount == 2) {
+			rankedGame.setBlueTeamIds(new long[] { playersIds[0] });
+			rankedGame.setRedTeamIds(new long[] { playersIds[1] });
+		} else if (playerCount == 4) {
+			rankedGame.setBlueTeamIds(new long[] { playersIds[0], playersIds[1] });
+			rankedGame.setRedTeamIds(new long[] { playersIds[2], playersIds[3] });
+		} else {
+			return new ResponseEntity<>(game, HttpStatus.BAD_REQUEST);
+		}
 
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
@@ -59,13 +75,14 @@ public class NormalGameViewController extends GameViewController {
 	@GetMapping("/finish")
 	@ResponseBody
 	public ResponseEntity<GameStats> finishGameEndpoint() {
-		GameStats stats = new GameStats();
+		RankedGameStats stats = new RankedGameStats();
 
 		getGameStats(stats);
+		stats.blueTeamNames = new String[] { "placeholder1", "placeholder2" };
+		stats.redTeamNames = new String[] { "placeholder3", "placeholder4" };
 
 		finishGame();
 
 		return new ResponseEntity<>(stats, HttpStatus.OK);
 	}
-
 }
