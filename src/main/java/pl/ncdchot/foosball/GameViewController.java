@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -36,8 +37,12 @@ public abstract class GameViewController {
 	@Autowired
 	private ObjectMapper mapper;
 
-	protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2); // scheduler for timers
+	protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // scheduler for timers
 	protected ScheduledFuture<?> timerHandle;
+
+	public abstract ResponseEntity<String> goalEndpoint(TeamColor team);
+
+	public abstract ResponseEntity<GameStats> finishGameEndpoint();
 
 	protected void startGame() {
 		game.resetScore();
@@ -89,6 +94,26 @@ public abstract class GameViewController {
 		lastGoalBy = team;
 
 		goals.add(new Goal(game.getGameTime(), team));
+
+		if (checkScoreLimit()) {
+			finishGame();
+		}
+
+	}
+
+	private boolean checkScoreLimit() {
+		if (game.getBlueScore() >= scoreLimit || game.getBlueScore() >= scoreLimit) {
+			return true;
+		}
+		return false;
+	}
+
+	void getGameStats(GameStats stats) {
+		stats.setRedScore(game.getRedScore());
+		stats.setBlueScore(game.getBlueScore());
+		stats.setBlueLongestSeries(blueTeamLongestSeries);
+		stats.setRedLongestSeries(redTeamLongestSeries);
+		stats.setGameTime(game.getGameTime());
 	}
 
 	protected WebSocketMessage<String> getAsWebSocketMessage(Object o) {

@@ -36,34 +36,32 @@ public class NormalGameViewController extends GameViewController {
 		return new ResponseEntity<>(game, HttpStatus.OK);
 	}
 
+	@Override
 	@PostMapping("/goal")
 	@ResponseBody
-	public ResponseEntity<String> goal(@RequestBody TeamColor team) {
+	public ResponseEntity<String> goalEndpoint(@RequestBody TeamColor team) {
 
+		if (game == null) {
+			return new ResponseEntity<>("You must start game first", HttpStatus.BAD_REQUEST);
+		}
 		if (game.isFinished()) {
-			return new ResponseEntity<>("No live game", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Game is already finished", HttpStatus.BAD_REQUEST);
 		}
 
 		incrementScore(team);
 
-		if (game.getBlueScore() >= scoreLimit || game.getRedScore() >= scoreLimit) {
-			finishGame();
-		}
 		sendGameWithWebsocket();
 
 		return new ResponseEntity<>("OK", HttpStatus.OK);
 	}
 
+	@Override
 	@GetMapping("/finish")
 	@ResponseBody
-	public ResponseEntity<GameStats> statistics() {
+	public ResponseEntity<GameStats> finishGameEndpoint() {
 		GameStats stats = new GameStats();
 
-		stats.setRedScore(game.getRedScore());
-		stats.setBlueScore(game.getBlueScore());
-		stats.setBlueLongestSeries(blueTeamLongestSeries);
-		stats.setRedLongestSeries(redTeamLongestSeries);
-		stats.setGameTime(game.getGameTime());
+		getGameStats(stats);
 
 		finishGame();
 
