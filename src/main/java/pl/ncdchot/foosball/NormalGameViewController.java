@@ -38,10 +38,10 @@ public class NormalGameViewController extends GameViewController {
 
 	@PostMapping("/goal")
 	@ResponseBody
-	public ResponseEntity<HttpStatus> goal(@RequestBody TeamColor team) {
+	public ResponseEntity<String> goal(@RequestBody TeamColor team) {
 
 		if (game.isFinished()) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No live game", HttpStatus.BAD_REQUEST);
 		}
 
 		incrementScore(team);
@@ -51,6 +51,23 @@ public class NormalGameViewController extends GameViewController {
 		}
 		sendGameWithWebsocket();
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>("OK", HttpStatus.OK);
 	}
+
+	@GetMapping("/finish")
+	@ResponseBody
+	public ResponseEntity<GameStats> statistics() {
+		GameStats stats = new GameStats();
+
+		stats.setRedScore(game.getRedScore());
+		stats.setBlueScore(game.getBlueScore());
+		stats.setBlueLongestSeries(blueTeamLongestSeries);
+		stats.setRedLongestSeries(redTeamLongestSeries);
+		stats.setGameTime(game.getGameTime());
+
+		finishGame();
+
+		return new ResponseEntity<>(stats, HttpStatus.OK);
+	}
+
 }
