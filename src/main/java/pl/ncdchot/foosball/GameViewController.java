@@ -102,7 +102,7 @@ public abstract class GameViewController {
 	}
 
 	private boolean checkScoreLimit() {
-		if (game.getBlueScore() >= scoreLimit || game.getBlueScore() >= scoreLimit) {
+		if (game.getBlueScore() >= scoreLimit || game.getRedScore() >= scoreLimit) {
 			return true;
 		}
 		return false;
