@@ -1,5 +1,7 @@
 package pl.ncdchot.foosball;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,10 +22,12 @@ public abstract class GameViewController {
 
 	protected GameState game;
 
+	// Statistics
 	protected int redTeamLongestSeries;
 	protected int blueTeamLongestSeries;
 	private int currentSeries;
 	private TeamColor lastGoalBy;
+	List<Goal> goals;
 
 	@Autowired
 	protected SocketHandler websock;
@@ -43,6 +47,7 @@ public abstract class GameViewController {
 		blueTeamLongestSeries = 0;
 		currentSeries = 0;
 		lastGoalBy = TeamColor.RED;
+		goals = new ArrayList<>();
 
 		// Send current state with websocket every 5 seconds for time sync
 		if (timerHandle != null && !timerHandle.isCancelled()) {
@@ -80,6 +85,8 @@ public abstract class GameViewController {
 		}
 
 		lastGoalBy = team;
+
+		goals.add(new Goal(game.getGameTime(), team));
 	}
 
 	protected WebSocketMessage<String> getAsWebSocketMessage(Object o) {
