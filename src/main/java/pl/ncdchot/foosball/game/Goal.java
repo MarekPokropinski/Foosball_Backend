@@ -1,10 +1,10 @@
-package pl.ncdchot.foosball;
+package pl.ncdchot.foosball.game;
 
 public class Goal {
 	long time;
 	TeamColor team;
 
-	Goal(long time, TeamColor team) {
+	public Goal(long time, TeamColor team) {
 		this.time = time;
 		this.team = team;
 	}

@@ -1,4 +1,4 @@
-package pl.ncdchot.foosball;
+package pl.ncdchot.foosball.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,10 @@ import org.springframework.web.socket.WebSocketMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import pl.ncdchot.foosball.game.GameState;
+import pl.ncdchot.foosball.game.GameStats;
+import pl.ncdchot.foosball.game.Goal;
+import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.webSockets.SocketHandler;
 
 @Controller

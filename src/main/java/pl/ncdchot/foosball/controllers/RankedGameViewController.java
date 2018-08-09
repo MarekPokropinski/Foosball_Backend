@@ -1,4 +1,4 @@
-package pl.ncdchot.foosball;
+package pl.ncdchot.foosball.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,26 +11,47 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import pl.ncdchot.foosball.game.GameState;
+import pl.ncdchot.foosball.game.GameStats;
+import pl.ncdchot.foosball.game.RankedGameState;
+import pl.ncdchot.foosball.game.RankedGameStats;
+import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.webSockets.SocketHandler;
 
 @Controller
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/normalGame")
-public class NormalGameViewController extends GameViewController {
+@RequestMapping(path = "/rankedGame")
+public class RankedGameViewController extends GameViewController {
+
+	private int playerCount;
+	private RankedGameState rankedGame;
 
 	@Autowired
-	NormalGameViewController(SocketHandler websock) {
-		game = new NormalGameState();
+	RankedGameViewController(SocketHandler websock) {
+		rankedGame = new RankedGameState();
+		game = rankedGame;
 		this.websock = websock;
 
 		scoreLimit = 10;
 	}
 
-	@GetMapping(value = "/start")
+	@PostMapping(value = "/start")
 	@ResponseBody
-	public ResponseEntity<GameState> startGameEndpoint() {
+	public ResponseEntity<GameState> startGameEndpoint(@RequestBody long[] playersIds) {
 
 		startGame();
+
+		playerCount = playersIds.length;
+
+		if (playerCount == 2) {
+			rankedGame.setBlueTeamIds(new long[] { playersIds[0] });
+			rankedGame.setRedTeamIds(new long[] { playersIds[1] });
+		} else if (playerCount == 4) {
+			rankedGame.setBlueTeamIds(new long[] { playersIds[0], playersIds[1] });
+			rankedGame.setRedTeamIds(new long[] { playersIds[2], playersIds[3] });
+		} else {
+			return new ResponseEntity<>(game, HttpStatus.BAD_REQUEST);
+		}
 
 		sendGameWithWebsocket();
 		return new ResponseEntity<>(game, HttpStatus.OK);
@@ -59,13 +80,14 @@ public class NormalGameViewController extends GameViewController {
 	@GetMapping("/finish")
 	@ResponseBody
 	public ResponseEntity<GameStats> finishGameEndpoint() {
-		GameStats stats = new GameStats();
+		RankedGameStats stats = new RankedGameStats();
 
 		getGameStats(stats);
+		stats.setBlueTeamNames(new String[] { "placeholder1", "placeholder2" });
+		stats.setRedTeamNames(new String[] { "placeholder3", "placeholder4" });
 
 		finishGame();
 
 		return new ResponseEntity<>(stats, HttpStatus.OK);
 	}
-
 }
