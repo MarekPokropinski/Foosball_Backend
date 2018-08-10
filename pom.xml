@@ -5,8 +5,9 @@
 
     <groupId>pl.ncdchot</groupId>
     <artifactId>foosball</artifactId>
-    <!--<version.0</version>-->
+
     <packaging>war</packaging>
+
     <name>foosball</name>
     <description>Hot#3 Foosball project</description>
 
