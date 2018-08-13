@@ -1,15 +1,15 @@
 package pl.ncdchot.foosball.services;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.database.model.Statistics;
-import pl.ncdchot.foosball.database.model.Team;
 import pl.ncdchot.foosball.database.repository.StatsRepository;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
-import pl.ncdchot.foosball.game.GameState;
+import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.webSockets.SocketHandler;
@@ -24,8 +24,8 @@ public class FreeGameServiceImpl implements FreeGameService {
 	private GameService gameService;
 
 	private static final Rules NORMAL_RULES = new Rules(0, 10, -1);
-	private static final Team RED_TEAM = new Team();
-	private static final Team BLUE_TEAM = new Team();
+
+	private static final Logger LOG = Logger.getLogger(FreeGameServiceImpl.class);
 
 	@Autowired
 	FreeGameServiceImpl(StatsRepository statsRepository, SocketHandler websocket, RulesService rulesService) {
@@ -40,16 +40,15 @@ public class FreeGameServiceImpl implements FreeGameService {
 
 		Statistics stats = gameService.createNewStats();
 
-		Game game = gameService.startGame(NORMAL_RULES, stats, RED_TEAM, BLUE_TEAM);
+		Game game = gameService.getCurrentGame(NORMAL_RULES, stats);
 
-		GameState data = new GameState();
-		data.setId(game.getId());
-		data.setBlueScore(stats.getBlueScore());
-		data.setRedScore(stats.getRedScore());
-		data.setFinished(false);
-		data.setTime(0);
+		try {
+			GameInfo info = gameService.getGameInfo(game.getId());
+			websocket.sendMessageToAllClients(info);
+		} catch (GameNotFoundException e) {
+			LOG.warn("Game couldn't be created");
+		}
 
-		websocket.sendMessageToAllClients(data);
 		return game.getId();
 	}
 
@@ -61,24 +60,19 @@ public class FreeGameServiceImpl implements FreeGameService {
 	@Override
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
 
-		if (gameService.isLive(gameId)) {
-			
+		if (gameService.isLive(gameId) && rulesService.checkRules(gameService.getGame(gameId))) {
+
 			gameService.goal(gameId, team);
-			
-			GameState data = new GameState();
-			data.setId(gameId);
-			data.setBlueScore(gameService.getBlueScore(gameId));
-			data.setRedScore(gameService.getRedScore(gameId));
-			data.setFinished(false);
-			data.setTime(0);
+
+			GameInfo info = gameService.getGameInfo(gameId);
 
 			if (!rulesService.checkRules(gameService.getGame(gameId))) {
-				data.setFinished(true);
+				info.setFinished(true);
 			}
 
-			websocket.sendMessageToAllClients(data);
+			websocket.sendMessageToAllClients(info);
 
-			if (data.isFinished()) {
+			if (info.isFinished()) {
 				finishGame(gameId);
 			}
 		} else {

@@ -1,11 +1,23 @@
 package pl.ncdchot.foosball.game;
 
-public class GameState {
+public class GameInfo {
 	private long time;
 	private int redScore;
 	private int blueScore;
 	private boolean finished;
 	private long id;
+
+	public GameInfo(long id, int redScore, int blueScore, long time, boolean finished) {
+		this.id = id;
+		this.redScore = redScore;
+		this.blueScore = blueScore;
+		this.time = time;
+		this.finished = finished;
+	}
+
+	public GameInfo() {
+
+	}
 
 	public long getTime() {
 		return time;
