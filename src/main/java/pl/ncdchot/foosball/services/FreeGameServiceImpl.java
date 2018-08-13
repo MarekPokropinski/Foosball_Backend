@@ -15,7 +15,7 @@ import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.webSockets.SocketHandler;
 
 @Service
-public class NormalGameServiceImpl implements NormalGameService {
+public class FreeGameServiceImpl implements FreeGameService {
 
 	private SocketHandler websocket;
 	private RulesService rulesService;
@@ -28,7 +28,7 @@ public class NormalGameServiceImpl implements NormalGameService {
 	private static final Team BLUE_TEAM = new Team();
 
 	@Autowired
-	NormalGameServiceImpl(StatsRepository statsRepository, SocketHandler websocket, RulesService rulesService) {
+	FreeGameServiceImpl(StatsRepository statsRepository, SocketHandler websocket, RulesService rulesService) {
 
 		this.websocket = websocket;
 		this.rulesService = rulesService;

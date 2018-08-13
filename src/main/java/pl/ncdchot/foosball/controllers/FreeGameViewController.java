@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
-import pl.ncdchot.foosball.services.NormalGameService;
+import pl.ncdchot.foosball.services.FreeGameService;
 
 @RestController
 @RequestMapping(path = "/normalGame")
-public class NormalGameViewController {
+public class FreeGameViewController {
 
-	private static final Logger LOG = Logger.getLogger(NormalGameViewController.class);
+	private static final Logger LOG = Logger.getLogger(FreeGameViewController.class);
 
-	private NormalGameService service;
+	private FreeGameService service;
 
 	@Autowired
-	NormalGameViewController(NormalGameService service) {
+	FreeGameViewController(FreeGameService service) {
 		this.service = service;
 	}
 
