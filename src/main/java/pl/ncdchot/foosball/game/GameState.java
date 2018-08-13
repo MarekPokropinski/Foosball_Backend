@@ -1,13 +1,19 @@
 package pl.ncdchot.foosball.game;
 
 public class GameState {
+	private long time;
+	private int redScore;
+	private int blueScore;
+	private boolean finished;
+	private long id;
 
-	protected int redScore;
-	protected int blueScore;
-	boolean finished = false;
-	long gameTime;
-	
-	long gameStartTime;
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
 
 	public int getRedScore() {
 		return redScore;
@@ -25,18 +31,6 @@ public class GameState {
 		this.blueScore = blueScore;
 	}
 
-	public void incrementRed() {
-		redScore++;
-	}
-
-	public void incrementBlue() {
-		blueScore++;
-	}
-
-	public void resetScore() {
-		redScore = blueScore = 0;
-	}
-
 	public boolean isFinished() {
 		return finished;
 	}
@@ -45,12 +39,12 @@ public class GameState {
 		this.finished = finished;
 	}
 
-	public long getGameTime() {
-		gameTime = System.currentTimeMillis() - gameStartTime;
-		return gameTime;
+	public long getId() {
+		return id;
 	}
-	public void restartTimer() {
-		gameTime = 0;
-		gameStartTime = System.currentTimeMillis();
+
+	public void setId(long id) {
+		this.id = id;
 	}
+
 }

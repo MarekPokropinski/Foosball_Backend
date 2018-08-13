@@ -1,11 +1,11 @@
 package pl.ncdchot.foosball.game;
 
-public class GameStats {
-	int redScore;
-	int blueScore;
-	int redLongestSeries;
-	int blueLongestSeries;
-	long gameTime;
+public class GameSummary {
+	private int redScore;
+	private int blueScore;
+	private long gameDuration;
+	private int redLongestSeries;
+	private int blueLongestSeries;
 
 	public int getRedScore() {
 		return redScore;
@@ -23,6 +23,14 @@ public class GameStats {
 		this.blueScore = blueScore;
 	}
 
+	public long getGameDuration() {
+		return gameDuration;
+	}
+
+	public void setGameDuration(long gameDuration) {
+		this.gameDuration = gameDuration;
+	}
+
 	public int getRedLongestSeries() {
 		return redLongestSeries;
 	}
@@ -37,13 +45,5 @@ public class GameStats {
 
 	public void setBlueLongestSeries(int blueLongestSeries) {
 		this.blueLongestSeries = blueLongestSeries;
-	}
-
-	public long getGameTime() {
-		return gameTime;
-	}
-
-	public void setGameTime(long gameTime) {
-		this.gameTime = gameTime;
 	}
 }
