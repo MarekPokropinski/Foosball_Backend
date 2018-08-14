@@ -6,6 +6,23 @@ public class GameSummary {
 	private long gameDuration;
 	private int redLongestSeries;
 	private int blueLongestSeries;
+	
+	
+
+	public GameSummary(int redScore, int blueScore, long gameDuration, int redLongestSeries, int blueLongestSeries) {
+		this.redScore = redScore;
+		this.blueScore = blueScore;
+		this.gameDuration = gameDuration;
+		this.redLongestSeries = redLongestSeries;
+		this.blueLongestSeries = blueLongestSeries;
+	}
+	
+	
+
+	public GameSummary() {
+	}
+
+
 
 	public int getRedScore() {
 		return redScore;

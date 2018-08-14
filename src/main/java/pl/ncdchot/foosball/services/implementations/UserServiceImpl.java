@@ -1,4 +1,4 @@
-package pl.ncdchot.foosball.services;
+package pl.ncdchot.foosball.services.implementations;
 
 import java.util.Optional;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.database.repository.UserRepository;
+import pl.ncdchot.foosball.services.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {

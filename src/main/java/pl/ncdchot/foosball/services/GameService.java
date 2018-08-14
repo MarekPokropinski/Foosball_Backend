@@ -12,29 +12,27 @@ import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
 
 public interface GameService {
-	public Optional<Game> getLiveGame();
+	Optional<Game> getLiveGame();
 
-	public Game getCurrentGame(Rules rules, Team redTeam, Team blueTeam);
-	
-	public Game getCurrentGame(Rules rules);
+	Game getCurrentGame(Rules rules, Team redTeam, Team blueTeam);
 
-	public void finishGame(long gameId) throws GameNotFoundException;
+	Game getCurrentGame(Rules rules);
 
-	public void goal(long gameId, TeamColor team) throws GameNotFoundException;
+	void finishGame(long gameId) throws GameNotFoundException;
 
-	public GameSummary getSummary(long gameId) throws GameNotFoundException;
-	
-	public GameInfo getGameInfo(long gameId) throws GameNotFoundException;
+	void goal(long gameId, TeamColor team) throws GameNotFoundException;
 
-	public int getBlueScore(long gameId) throws GameNotFoundException;
+	GameSummary getSummary(long gameId) throws GameNotFoundException;
 
-	public int getRedScore(long gameId) throws GameNotFoundException;
+	GameInfo getGameInfo(long gameId) throws GameNotFoundException;
 
-	public Game getGame(long gameId) throws GameNotFoundException;
+	int getBlueScore(long gameId) throws GameNotFoundException;
 
-	public boolean isLive(long gameId);
+	int getRedScore(long gameId) throws GameNotFoundException;
 
-	public Statistics createNewStats();
-	
-	
+	Game getGame(long gameId) throws GameNotFoundException;
+
+	boolean isLive(long gameId);
+
+	Statistics createNewStats();
 }
