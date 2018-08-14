@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.database.model.Statistics;
-import pl.ncdchot.foosball.database.repository.StatsRepository;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
@@ -16,30 +15,24 @@ import pl.ncdchot.foosball.webSockets.SocketHandler;
 
 @Service
 public class FreeGameServiceImpl implements FreeGameService {
-
 	private SocketHandler websocket;
 	private RulesService rulesService;
-
-	@Autowired
 	private GameService gameService;
 
 	private static final Rules NORMAL_RULES = new Rules(0, 10, -1);
-
 	private static final Logger LOG = Logger.getLogger(FreeGameServiceImpl.class);
 
 	@Autowired
-	FreeGameServiceImpl(StatsRepository statsRepository, SocketHandler websocket, RulesService rulesService) {
-
+	FreeGameServiceImpl(GameService gameService, SocketHandler websocket, RulesService rulesService) {
 		this.websocket = websocket;
 		this.rulesService = rulesService;
-		this.rulesService.AddRules(NORMAL_RULES);
+		this.gameService = gameService;
+		this.rulesService.getRules(NORMAL_RULES);
 	}
 
 	@Override
 	public long startGame() {
-
 		Statistics stats = gameService.createNewStats();
-
 		Game game = gameService.getCurrentGame(NORMAL_RULES, stats);
 
 		try {
@@ -61,9 +54,7 @@ public class FreeGameServiceImpl implements FreeGameService {
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
 
 		if (gameService.isLive(gameId) && rulesService.checkRules(gameService.getGame(gameId))) {
-
 			gameService.goal(gameId, team);
-
 			GameInfo info = gameService.getGameInfo(gameId);
 
 			if (!rulesService.checkRules(gameService.getGame(gameId))) {
