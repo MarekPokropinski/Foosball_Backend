@@ -1,14 +1,25 @@
 package pl.ncdchot.foosball.database.model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+
+import pl.ncdchot.foosball.game.TeamColor;
 
 @Entity
 public class Goal extends BaseModel {
-
 	private long time;
-	@ManyToOne
-	private Team team;
+
+	private TeamColor team;
+
+	public Goal() {
+
+	}
+
+	public Goal(TeamColor team) {
+		this.team = team;
+		this.time = new Date().getTime();
+	}
 
 	public long getTime() {
 		return time;
@@ -18,11 +29,11 @@ public class Goal extends BaseModel {
 		this.time = time;
 	}
 
-	public Team getTeam() {
+	public TeamColor getTeam() {
 		return team;
 	}
 
-	public void setTeam(Team team) {
+	public void setTeam(TeamColor team) {
 		this.team = team;
 	}
 }

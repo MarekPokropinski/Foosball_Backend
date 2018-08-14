@@ -8,10 +8,11 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class Game extends BaseModel {
+
 	private Date startDate;
 	private Date endDate;
 	private GameType type;
-	
+
 	@OneToOne
 	private Statistics stats;
 
@@ -23,6 +24,28 @@ public class Game extends BaseModel {
 
 	@ManyToOne
 	private Rules rules;
+
+	public Game() {
+
+	}
+
+	public Game(GameType type, Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
+
+		this.startDate = new Date();
+		this.type = type;
+		this.rules = rules;
+		this.stats = stats;
+		this.blueTeam = blueTeam;
+		this.redTeam = redTeam;
+	}
+
+	public Game(GameType type, Rules rules, Statistics stats) {
+
+		this.startDate = new Date();
+		this.type = type;
+		this.rules = rules;
+		this.stats = stats;
+	}
 
 	public Date getStartDate() {
 		return startDate;

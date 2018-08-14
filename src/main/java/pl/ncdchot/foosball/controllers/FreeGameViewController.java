@@ -15,7 +15,7 @@ import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.services.FreeGameService;
 
 @RestController
-@RequestMapping(path = "/normalGame")
+@RequestMapping(path = "/freeGame")
 public class FreeGameViewController {
 
 	private static final Logger LOG = Logger.getLogger(FreeGameViewController.class);

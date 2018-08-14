@@ -1,5 +1,6 @@
 package pl.ncdchot.foosball.database.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -14,6 +15,9 @@ public class Statistics extends BaseModel {
 	private int blueSeries;
 	private long duration;
 	
+	public Statistics() {
+		goals = new ArrayList<Goal>();
+	}
 
 	@OneToMany
 	private List<Goal> goals;

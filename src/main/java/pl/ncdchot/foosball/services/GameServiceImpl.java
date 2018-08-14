@@ -3,6 +3,7 @@ package pl.ncdchot.foosball.services;
 import java.util.Date;
 import java.util.Optional;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,22 +14,24 @@ import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.database.model.Statistics;
 import pl.ncdchot.foosball.database.model.Team;
 import pl.ncdchot.foosball.database.repository.GameRepository;
-import pl.ncdchot.foosball.database.repository.StatsRepository;
-import pl.ncdchot.foosball.database.repository.TeamRepository;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
-import pl.ncdchot.foosball.game.GameState;
+import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
 
 @Service
 public class GameServiceImpl implements GameService {
 
+	private static final Logger LOG = Logger.getLogger(GameServiceImpl.class);
+
 	@Autowired
 	private GameRepository gameRepository;
+
 	@Autowired
-	private TeamRepository teamRepository;
+	private StatisticsService statsService;
+
 	@Autowired
-	private StatsRepository statsRepository;
+	private GoalService goalService;
 
 	@Override
 	public Optional<Game> getLiveGame() {
@@ -36,37 +39,39 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public Game startGame(Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
+	public Game getCurrentGame(Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
+		return liveGameExists() ? extistingGame() : createNewGame(rules, stats, redTeam, blueTeam);
+	}
 
-		Optional<Game> liveGame = getLiveGame();
+	private boolean liveGameExists() {
+		return getLiveGame().isPresent();
+	}
 
-		if (liveGame.isPresent()) {
-			System.out.println("There is live game: " + liveGame.get().getId());
-			return liveGame.get();
-		}
+	private Game extistingGame() {
+		Game liveGame = getLiveGame().get();
+		LOG.info("There is live game: " + liveGame.getId());
+		return liveGame;
+	}
 
-		teamRepository.save(redTeam);
-		teamRepository.save(blueTeam);
-
-		Game game = new Game();
-		game.setStartDate(new Date());
-		game.setType(GameType.NORMAL);
-		game.setRules(rules);
-		game.setStats(stats);
-
-		game.setBlueTeam(blueTeam);
-		game.setRedTeam(redTeam);
-
+	private Game createNewGame(Rules rules, Statistics stats) {
+		Game game = new Game(GameType.NORMAL, rules, stats);
 		gameRepository.save(game);
-
-		GameState data = new GameState();
-		data.setId(game.getId());
-		data.setBlueScore(stats.getBlueScore());
-		data.setRedScore(stats.getRedScore());
-		data.setFinished(false);
-		data.setTime(0);
-
 		return game;
+	}
+
+	private Game createNewGame(Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
+		Game game = new Game(GameType.NORMAL, rules, stats, redTeam, blueTeam);
+		gameRepository.save(game);
+		return game;
+	}
+
+	@Override
+	public Game getCurrentGame(Rules rules, Statistics stats) {
+		return liveGameExists() ? extistingGame() : createNewGame(rules, stats);
+	}
+
+	private long getTimeDifference(Date startDate) {
+		return new Date().getTime() - startDate.getTime();
 	}
 
 	@Override
@@ -77,16 +82,19 @@ public class GameServiceImpl implements GameService {
 			game.setEndDate(new Date());
 			Statistics stats = game.getStats();
 			stats.setDuration((game.getEndDate().getTime() - game.getStartDate().getTime()) / 1000);
-			statsRepository.save(stats);
+			statsService.saveStats(stats);
 			gameRepository.save(game);
 		} else {
 			throw new GameNotFoundException();
 		}
 	}
 
+	private void scoreGoal(Statistics stats, TeamColor team) {
+		stats.getGoals().add(goalService.getNewGoal(team));
+	}
+
 	@Override
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
-
 		Optional<Game> optGame = gameRepository.findById(gameId);
 		if (optGame.isPresent()) {
 			Game game = optGame.get();
@@ -99,14 +107,8 @@ public class GameServiceImpl implements GameService {
 				stats.setBlueScore(stats.getBlueScore() + 1);
 				break;
 			}
-			statsRepository.save(stats);
-
-			GameState data = new GameState();
-			data.setId(game.getId());
-			data.setBlueScore(stats.getBlueScore());
-			data.setRedScore(stats.getRedScore());
-			data.setFinished(false);
-			data.setTime(0);
+			scoreGoal(stats, team);
+			statsService.saveStats(stats);
 
 		} else {
 			throw new GameNotFoundException();
@@ -130,22 +132,22 @@ public class GameServiceImpl implements GameService {
 		int blueSeries = 0;
 		int series = 0;
 
-		long redTeamId = game.getRedTeam().getId();
-		long blueTeamId = game.getBlueTeam().getId();
+		TeamColor previousGoalTeam = TeamColor.RED;
 
-		long t = redTeamId;
+		stats.getGoals().sort((a, b) -> Long.compare(b.getTime(), a.getTime()));
 
 		for (Goal goal : stats.getGoals()) {
-			if (t == goal.getTeam().getId()) {
+			if (previousGoalTeam.equals(goal.getTeam())) {
 				series++;
 			} else {
 				series = 1;
 			}
-			if (goal.getTeam().getId() == redTeamId) {
+			if (goal.getTeam().equals(TeamColor.RED)) {
 				redSeries = Math.max(redSeries, series);
 			} else {
-				blueTeamId = Math.max(blueTeamId, series);
+				blueSeries = Math.max(blueSeries, series);
 			}
+			previousGoalTeam = goal.getTeam();
 		}
 
 		stats.setRedSeries(redSeries);
@@ -154,7 +156,7 @@ public class GameServiceImpl implements GameService {
 		summary.setRedLongestSeries(redSeries);
 		summary.setBlueLongestSeries(blueSeries);
 
-		statsRepository.save(stats);
+		statsService.saveStats(stats);
 
 		return summary;
 	}
@@ -202,9 +204,19 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public Statistics createNewStats() {
-		Statistics stats = new Statistics();
-		statsRepository.save(stats);
-		return stats;
+		return statsService.createEmpty();
+	}
+
+	@Override
+	public GameInfo getGameInfo(long gameId) throws GameNotFoundException {
+
+		Game game = getGame(gameId);
+		Statistics stats = game.getStats();
+
+		GameInfo info = new GameInfo(game.getId(), stats.getRedScore(), stats.getBlueScore(),
+				getTimeDifference(game.getStartDate()), false);
+
+		return info;
 	}
 
 }
