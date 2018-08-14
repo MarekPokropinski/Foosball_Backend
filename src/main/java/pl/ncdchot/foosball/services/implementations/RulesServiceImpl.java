@@ -1,4 +1,4 @@
-package pl.ncdchot.foosball.services;
+package pl.ncdchot.foosball.services.implementations;
 
 import java.util.Optional;
 
@@ -9,6 +9,7 @@ import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.database.model.Statistics;
 import pl.ncdchot.foosball.database.repository.RulesRepository;
+import pl.ncdchot.foosball.services.RulesService;
 
 @Service
 public class RulesServiceImpl implements RulesService {

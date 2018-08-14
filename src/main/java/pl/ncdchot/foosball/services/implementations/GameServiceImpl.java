@@ -1,11 +1,10 @@
-package pl.ncdchot.foosball.services;
+package pl.ncdchot.foosball.services.implementations;
 
 import java.util.Date;
 import java.util.Optional;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.GameType;
@@ -18,20 +17,30 @@ import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
+import pl.ncdchot.foosball.services.GameService;
+import pl.ncdchot.foosball.services.GoalService;
+import pl.ncdchot.foosball.services.RulesService;
+import pl.ncdchot.foosball.services.StatisticsService;
+import pl.ncdchot.foosball.webSockets.SocketHandler;
 
-@Service
-public class GameServiceImpl implements GameService {
+public abstract class GameServiceImpl implements GameService {
 
 	private static final Logger LOG = Logger.getLogger(GameServiceImpl.class);
 
 	@Autowired
-	private GameRepository gameRepository;
+	protected GameRepository gameRepository;
 
 	@Autowired
-	private StatisticsService statsService;
+	protected StatisticsService statsService;
 
 	@Autowired
-	private GoalService goalService;
+	protected SocketHandler websocket;
+
+	@Autowired
+	protected GoalService goalService;
+
+	@Autowired
+	protected RulesService rulesService;
 
 	@Override
 	public Optional<Game> getLiveGame() {
@@ -91,26 +100,38 @@ public class GameServiceImpl implements GameService {
 		}
 	}
 
-	private void scoreGoal(Statistics stats, TeamColor team) {
+	private void scoreGoal(Game game, TeamColor team) {
+		Statistics stats = game.getStats();
+		incrementScore(stats, team);
 		stats.getGoals().add(goalService.getNewGoal(team));
+		statsService.saveStats(stats);
+	}
+
+	private void incrementScore(Statistics stats, TeamColor team) {
+		switch (team) {
+		case RED:
+			stats.setRedScore(stats.getRedScore() + 1);
+			break;
+		case BLUE:
+			stats.setBlueScore(stats.getBlueScore() + 1);
+			break;
+		}
 	}
 
 	@Override
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
-		Optional<Game> optGame = gameRepository.findById(gameId);
-		if (optGame.isPresent()) {
-			Game game = optGame.get();
-			Statistics stats = game.getStats();
-			switch (team) {
-			case RED:
-				stats.setRedScore(stats.getRedScore() + 1);
-				break;
-			case BLUE:
-				stats.setBlueScore(stats.getBlueScore() + 1);
-				break;
+		if (isLive(gameId) && rulesService.checkRules(getGame(gameId))) {
+			Game game = getGame(gameId);
+
+			scoreGoal(game, team);
+
+			GameInfo info = getGameInfo(gameId);
+
+			if (!rulesService.checkRules(getGame(gameId))) {
+				info.setFinished(true);
+				finishGame(gameId);
 			}
-			scoreGoal(stats, team);
-			statsService.saveStats(stats);
+			websocket.sendMessageToAllClients(info);
 
 		} else {
 			throw new GameNotFoundException();
@@ -119,16 +140,12 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public GameSummary getSummary(long gameId) throws GameNotFoundException {
-		GameSummary summary = new GameSummary();
 		Optional<Game> optGame = gameRepository.findById(gameId);
 		if (!optGame.isPresent()) {
 			throw new GameNotFoundException();
 		}
 		Game game = optGame.get();
 		Statistics stats = game.getStats();
-		summary.setBlueScore(stats.getBlueScore());
-		summary.setRedScore(stats.getRedScore());
-		summary.setGameDuration(game.getEndDate().getTime() - game.getStartDate().getTime());
 
 		int redSeries = 0;
 		int blueSeries = 0;
@@ -155,12 +172,10 @@ public class GameServiceImpl implements GameService {
 		stats.setRedSeries(redSeries);
 		stats.setBlueSeries(blueSeries);
 
-		summary.setRedLongestSeries(redSeries);
-		summary.setBlueLongestSeries(blueSeries);
-
 		statsService.saveStats(stats);
 
-		return summary;
+		return new GameSummary(stats.getRedScore(), stats.getBlueScore(),
+				game.getEndDate().getTime() - game.getStartDate().getTime(), redSeries, blueSeries);
 	}
 
 	@Override

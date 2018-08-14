@@ -1,10 +1,11 @@
-package pl.ncdchot.foosball.services;
+package pl.ncdchot.foosball.services.implementations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.Statistics;
 import pl.ncdchot.foosball.database.repository.StatsRepository;
+import pl.ncdchot.foosball.services.StatisticsService;
 
 
 @Service
