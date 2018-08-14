@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.Rules;
-import pl.ncdchot.foosball.database.model.Statistics;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
@@ -27,13 +26,11 @@ public class FreeGameServiceImpl implements FreeGameService {
 		this.websocket = websocket;
 		this.rulesService = rulesService;
 		this.gameService = gameService;
-		this.rulesService.getRules(NORMAL_RULES);
 	}
 
 	@Override
 	public long startGame() {
-		Statistics stats = gameService.createNewStats();
-		Game game = gameService.getCurrentGame(NORMAL_RULES, stats);
+		Game game = gameService.getCurrentGame(rulesService.getRules(NORMAL_RULES));
 
 		try {
 			GameInfo info = gameService.getGameInfo(game.getId());
