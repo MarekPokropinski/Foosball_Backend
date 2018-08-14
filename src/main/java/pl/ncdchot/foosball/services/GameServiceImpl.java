@@ -39,8 +39,8 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public Game getCurrentGame(Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
-		return liveGameExists() ? extistingGame() : createNewGame(rules, stats, redTeam, blueTeam);
+	public Game getCurrentGame(Rules rules, Team redTeam, Team blueTeam) {
+		return liveGameExists() ? extistingGame() : createNewGame(rules, redTeam, blueTeam);
 	}
 
 	private boolean liveGameExists() {
@@ -53,21 +53,23 @@ public class GameServiceImpl implements GameService {
 		return liveGame;
 	}
 
-	private Game createNewGame(Rules rules, Statistics stats) {
+	private Game createNewGame(Rules rules) {
+		Statistics stats = statsService.createEmpty();
 		Game game = new Game(GameType.NORMAL, rules, stats);
 		gameRepository.save(game);
 		return game;
 	}
 
-	private Game createNewGame(Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
+	private Game createNewGame(Rules rules, Team redTeam, Team blueTeam) {
+		Statistics stats = statsService.createEmpty();
 		Game game = new Game(GameType.NORMAL, rules, stats, redTeam, blueTeam);
 		gameRepository.save(game);
 		return game;
 	}
 
 	@Override
-	public Game getCurrentGame(Rules rules, Statistics stats) {
-		return liveGameExists() ? extistingGame() : createNewGame(rules, stats);
+	public Game getCurrentGame(Rules rules) {
+		return liveGameExists() ? extistingGame() : createNewGame(rules);
 	}
 
 	private long getTimeDifference(Date startDate) {
