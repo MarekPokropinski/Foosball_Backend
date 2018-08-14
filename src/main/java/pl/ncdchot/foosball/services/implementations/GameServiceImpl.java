@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.GameType;
@@ -24,8 +23,7 @@ import pl.ncdchot.foosball.services.RulesService;
 import pl.ncdchot.foosball.services.StatisticsService;
 import pl.ncdchot.foosball.webSockets.SocketHandler;
 
-@Service("gameService")
-public class GameServiceImpl implements GameService {
+public abstract class GameServiceImpl implements GameService {
 
 	private static final Logger LOG = Logger.getLogger(GameServiceImpl.class);
 
