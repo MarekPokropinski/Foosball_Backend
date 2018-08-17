@@ -7,7 +7,6 @@ import javax.persistence.ManyToMany;
 
 @Entity
 public class Team extends BaseModel {
-
 	@ManyToMany
 	private List<User> users;
 

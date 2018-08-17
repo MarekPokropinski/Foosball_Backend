@@ -5,6 +5,8 @@ import javax.persistence.Id;
 
 @Entity
 public class User {
+	@Id
+	private long id;
 
 	public User() {
 
@@ -13,9 +15,6 @@ public class User {
 	public User(long id) {
 		this.id = id;
 	}
-
-	@Id
-	private long id;
 
 	public long getUserId() {
 		return id;

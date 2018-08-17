@@ -40,7 +40,7 @@ public class FreeGameViewController {
 		try {
 			service.goal(gameId, team);
 		} catch (GameNotFoundException e) {
-			LOG.warn("Tried to score goal in game that was not live. Id: " + gameId);
+			LOG.warn(String.format("Tried to score goal in game that was not live. Id: %s", gameId));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
@@ -52,13 +52,13 @@ public class FreeGameViewController {
 		try {
 			service.finishGame(gameId);
 		} catch (GameNotFoundException e) {
-			LOG.warn("Tried to finish game that was not live. Id: " + gameId);
+			LOG.warn(String.format("Tried to finish game that was not live. Id: %s", gameId));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		try {
 			return new ResponseEntity<>(service.getSummary(gameId), HttpStatus.OK);
 		} catch (GameNotFoundException e) {
-			LOG.warn("Tried to get summary of game that was not live. Id: " + gameId);
+			LOG.warn(String.format("Tried to get summary of game that was not live. Id: %s", gameId));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}

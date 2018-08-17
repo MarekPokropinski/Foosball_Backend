@@ -11,8 +11,8 @@ import pl.ncdchot.foosball.services.FreeGameService;
 
 @Service
 public class FreeGameServiceImpl extends GameServiceImpl implements FreeGameService {
-	
-	private static final Rules NORMAL_RULES = new Rules(0, 10, -1);
+	private static int SCORE_LIMIT = 10;
+	private static final Rules NORMAL_RULES = new Rules(SCORE_LIMIT);
 	private static final Logger LOG = Logger.getLogger(FreeGameServiceImpl.class);
 
 	FreeGameServiceImpl() {

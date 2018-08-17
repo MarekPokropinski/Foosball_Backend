@@ -51,14 +51,14 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public Game getCurrentGame(Rules rules, Team redTeam, Team blueTeam) {
-		return liveGameExists() ? extistingGame() : createNewGame(rules, redTeam, blueTeam);
+		return liveGameExists() ? getExtistingGame() : createNewGame(rules, redTeam, blueTeam);
 	}
 
 	private boolean liveGameExists() {
 		return getLiveGame().isPresent();
 	}
 
-	private Game extistingGame() {
+	private Game getExtistingGame() {
 		Game liveGame = getLiveGame().get();
 		LOG.info("There is live game: " + liveGame.getId());
 		return liveGame;
@@ -80,7 +80,7 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public Game getCurrentGame(Rules rules) {
-		return liveGameExists() ? extistingGame() : createNewGame(rules);
+		return liveGameExists() ? getExtistingGame() : createNewGame(rules);
 	}
 
 	private long getTimeDifference(Date startDate) {
@@ -124,9 +124,7 @@ public class GameServiceImpl implements GameService {
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
 		if (isLive(gameId) && rulesService.checkRules(getGame(gameId))) {
 			Game game = getGame(gameId);
-
 			scoreGoal(game, team);
-
 			GameInfo info = getGameInfo(gameId);
 
 			if (!rulesService.checkRules(getGame(gameId))) {
@@ -140,22 +138,14 @@ public class GameServiceImpl implements GameService {
 		}
 	}
 
-	@Override
-	public GameSummary getSummary(long gameId) throws GameNotFoundException {
-		Optional<Game> optGame = gameRepository.findById(gameId);
-		if (!optGame.isPresent()) {
-			throw new GameNotFoundException();
-		}
-		Game game = optGame.get();
-		Statistics stats = game.getStats();
-
+	private void getSeries(Statistics stats) {
 		int redSeries = 0;
 		int blueSeries = 0;
 		int series = 0;
 
 		TeamColor previousGoalTeam = TeamColor.RED;
 
-		stats.getGoals().sort((a, b) -> Long.compare(b.getTime(), a.getTime()));
+		stats.getGoals().sort((a, b) -> b.getTime().compareTo(a.getTime()));
 
 		for (Goal goal : stats.getGoals()) {
 			if (previousGoalTeam.equals(goal.getTeam())) {
@@ -170,14 +160,20 @@ public class GameServiceImpl implements GameService {
 			}
 			previousGoalTeam = goal.getTeam();
 		}
-
 		stats.setRedSeries(redSeries);
 		stats.setBlueSeries(blueSeries);
-
 		statsService.saveStats(stats);
+	}
 
+	@Override
+	public GameSummary getSummary(long gameId) throws GameNotFoundException {
+		Optional<Game> optGame = gameRepository.findById(gameId);
+		Game game = optGame.orElseThrow(GameNotFoundException::new);
+		Statistics stats = game.getStats();
+		getSeries(stats);
 		return new GameSummary(stats.getRedScore(), stats.getBlueScore(),
-				game.getEndDate().getTime() - game.getStartDate().getTime(), redSeries, blueSeries);
+				game.getEndDate().getTime() - game.getStartDate().getTime(), stats.getRedSeries(),
+				stats.getBlueSeries());
 	}
 
 	@Override
@@ -231,7 +227,6 @@ public class GameServiceImpl implements GameService {
 
 		Game game = getGame(gameId);
 		Statistics stats = game.getStats();
-
 		GameInfo info = new GameInfo(game.getId(), stats.getRedScore(), stats.getBlueScore(),
 				getTimeDifference(game.getStartDate()), false);
 
