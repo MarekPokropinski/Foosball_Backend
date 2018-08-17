@@ -18,25 +18,24 @@ import pl.ncdchot.foosball.services.GameService;
 
 @RestController
 public class GoalController {
-	
+
 	private static final Logger LOG = Logger.getLogger(FreeGameViewController.class);
-	
+
 	@Autowired
 	@Qualifier("gameService")
 	private GameService service;
 
-	
 	@PostMapping("/goal")
 	public ResponseEntity<?> goalEndpoint(@RequestParam TeamColor team) {
 		LOG.info(String.format("Goal for game for team: %s", team));
 		Optional<Game> game = service.getLiveGame();
-		if(!game.isPresent()) {
+		if (!game.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.ACCEPTED);
 		}
 		try {
 			service.goal(game.get().getId(), team);
 		} catch (GameNotFoundException e) {
-			LOG.warn("Tried to score goal in game that was not live. Id: " + game.get().getId());
+			LOG.warn(String.format("Tried to score goal in game that was not live. Id: %s" , game.get().getId()));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);

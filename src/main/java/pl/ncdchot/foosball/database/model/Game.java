@@ -30,17 +30,13 @@ public class Game extends BaseModel {
 	}
 
 	public Game(GameType type, Rules rules, Statistics stats, Team redTeam, Team blueTeam) {
-
-		this.startDate = new Date();
-		this.type = type;
-		this.rules = rules;
-		this.stats = stats;
+		this(type,rules,stats);
+		this.startDate = new Date();		
 		this.blueTeam = blueTeam;
 		this.redTeam = redTeam;
 	}
 
 	public Game(GameType type, Rules rules, Statistics stats) {
-
 		this.startDate = new Date();
 		this.type = type;
 		this.rules = rules;

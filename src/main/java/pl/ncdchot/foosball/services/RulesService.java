@@ -5,6 +5,6 @@ import pl.ncdchot.foosball.database.model.Rules;
 
 public interface RulesService {
 	boolean checkRules(Game game);
-	void AddRules(Rules rules);
+	void addRules(Rules rules);
 	Rules getRules(Rules rules);
 }

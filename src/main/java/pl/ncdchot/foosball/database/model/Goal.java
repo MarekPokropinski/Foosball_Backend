@@ -8,8 +8,7 @@ import pl.ncdchot.foosball.game.TeamColor;
 
 @Entity
 public class Goal extends BaseModel {
-	private long time;
-
+	private Date time;
 	private TeamColor team;
 
 	public Goal() {
@@ -18,14 +17,14 @@ public class Goal extends BaseModel {
 
 	public Goal(TeamColor team) {
 		this.team = team;
-		this.time = new Date().getTime();
+		this.time = new Date();
 	}
 
-	public long getTime() {
+	public Date getTime() {
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTime(Date time) {
 		this.time = time;
 	}
 

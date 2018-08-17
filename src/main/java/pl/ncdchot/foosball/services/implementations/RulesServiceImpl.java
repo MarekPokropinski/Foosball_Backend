@@ -29,7 +29,7 @@ public class RulesServiceImpl implements RulesService {
 	}
 
 	@Override
-	public void AddRules(Rules rules) {
+	public void addRules(Rules rules) {
 		rulesRepository.save(rules);
 	}
 
