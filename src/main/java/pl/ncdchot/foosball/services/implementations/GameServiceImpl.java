@@ -97,6 +97,7 @@ public class GameServiceImpl implements GameService {
 			stats.setDuration((game.getEndDate().getTime() - game.getStartDate().getTime()) / 1000);
 			statsService.saveStats(stats);
 			gameRepository.save(game);
+			websocket.sendMessageToAllClients(getGameInfo(gameId));
 		} else {
 			throw new GameNotFoundException();
 		}
@@ -130,8 +131,9 @@ public class GameServiceImpl implements GameService {
 			if (!rulesService.checkRules(getGame(gameId))) {
 				info.setFinished(true);
 				finishGame(gameId);
+			} else {
+				websocket.sendMessageToAllClients(info);
 			}
-			websocket.sendMessageToAllClients(info);
 
 		} else {
 			throw new GameNotFoundException();
