@@ -97,6 +97,7 @@ public class GameServiceImpl implements GameService {
 			stats.setDuration((game.getEndDate().getTime() - game.getStartDate().getTime()) / 1000);
 			statsService.saveStats(stats);
 			gameRepository.save(game);
+			websocket.sendMessageToAllClients(getGameInfo(gameId));
 		} else {
 			throw new GameNotFoundException();
 		}
@@ -124,16 +125,15 @@ public class GameServiceImpl implements GameService {
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
 		if (isLive(gameId) && rulesService.checkRules(getGame(gameId))) {
 			Game game = getGame(gameId);
-
 			scoreGoal(game, team);
-
 			GameInfo info = getGameInfo(gameId);
 
 			if (!rulesService.checkRules(getGame(gameId))) {
 				info.setFinished(true);
 				finishGame(gameId);
+			} else {
+				websocket.sendMessageToAllClients(info);
 			}
-			websocket.sendMessageToAllClients(info);
 
 		} else {
 			throw new GameNotFoundException();
