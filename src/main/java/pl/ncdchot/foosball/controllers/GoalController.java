@@ -40,5 +40,21 @@ public class GoalController {
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	@PostMapping("/revertGoal")
+	public ResponseEntity<?> revertGoalEndpoint(@RequestParam TeamColor team) {
+		LOG.info(String.format("Revert goal for team: %s", team));
+		Optional<Game> game = service.getLiveGame();
+		if (!game.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.ACCEPTED);
+		}
+		try {
+			service.revertGoal(game.get().getId(), team);
+		} catch (GameNotFoundException e) {
+			LOG.warn(String.format("Tried to revert goal in game that was not live. Id: %s", game.get().getId()));
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
 }
