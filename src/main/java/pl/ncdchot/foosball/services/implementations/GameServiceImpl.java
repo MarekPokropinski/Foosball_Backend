@@ -97,7 +97,9 @@ public class GameServiceImpl implements GameService {
 			stats.setDuration((game.getEndDate().getTime() - game.getStartDate().getTime()) / 1000);
 			statsService.saveStats(stats);
 			gameRepository.save(game);
-			websocket.sendMessageToAllClients(getGameInfo(gameId));
+			GameInfo info = getGameInfo(gameId);
+			info.setFinished(true);
+			websocket.sendMessageToAllClients(info);
 		} else {
 			throw new GameNotFoundException();
 		}
@@ -249,10 +251,14 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public GameInfo getGameInfo(long gameId) throws GameNotFoundException {
 
+		boolean isGameFinished = false;
 		Game game = getGame(gameId);
+		if(game.getEndDate() != null) {
+			isGameFinished = true;
+		}
 		Statistics stats = game.getStats();
 		GameInfo info = new GameInfo(game.getId(), stats.getRedScore(), stats.getBlueScore(),
-				getTimeDifference(game.getStartDate()), false);
+				getTimeDifference(game.getStartDate()), isGameFinished);
 
 		return info;
 	}
