@@ -22,6 +22,8 @@ public interface GameService {
 
 	void goal(long gameId, TeamColor team) throws GameNotFoundException;
 
+	void revertGoal(long gameId, TeamColor team) throws GameNotFoundException;
+
 	GameSummary getSummary(long gameId) throws GameNotFoundException;
 
 	GameInfo getGameInfo(long gameId) throws GameNotFoundException;

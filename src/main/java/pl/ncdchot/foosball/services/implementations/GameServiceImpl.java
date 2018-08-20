@@ -51,14 +51,14 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public Game getCurrentGame(Rules rules, Team redTeam, Team blueTeam) {
-		return liveGameExists() ? getExtistingGame() : createNewGame(rules, redTeam, blueTeam);
+		return liveGameExists() ? getExistingGame() : createNewGame(rules, redTeam, blueTeam);
 	}
 
 	private boolean liveGameExists() {
 		return getLiveGame().isPresent();
 	}
 
-	private Game getExtistingGame() {
+	private Game getExistingGame() {
 		Game liveGame = getLiveGame().get();
 		LOG.info("There is live game: " + liveGame.getId());
 		return liveGame;
@@ -80,7 +80,7 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public Game getCurrentGame(Rules rules) {
-		return liveGameExists() ? getExtistingGame() : createNewGame(rules);
+		return liveGameExists() ? getExistingGame() : createNewGame(rules);
 	}
 
 	private long getTimeDifference(Date startDate) {
@@ -105,18 +105,18 @@ public class GameServiceImpl implements GameService {
 
 	private void scoreGoal(Game game, TeamColor team) {
 		Statistics stats = game.getStats();
-		incrementScore(stats, team);
+		changeScore(stats, team, 1);
 		stats.getGoals().add(goalService.getNewGoal(team));
 		statsService.saveStats(stats);
 	}
-
-	private void incrementScore(Statistics stats, TeamColor team) {
+	
+	private void changeScore(Statistics stats, TeamColor team, int points) {
 		switch (team) {
 		case RED:
-			stats.setRedScore(stats.getRedScore() + 1);
+			stats.setRedScore(stats.getRedScore() + points);
 			break;
 		case BLUE:
-			stats.setBlueScore(stats.getBlueScore() + 1);
+			stats.setBlueScore(stats.getBlueScore() + points);
 			break;
 		}
 	}
@@ -137,6 +137,28 @@ public class GameServiceImpl implements GameService {
 
 		} else {
 			throw new GameNotFoundException();
+		}
+	}
+	
+	@Override
+	public void revertGoal(long gameId, TeamColor team) throws GameNotFoundException {
+		if (isLive(gameId) && rulesService.checkRules(getGame(gameId))) {
+			Game game = getGame(gameId);
+			removeGoal(game, team);
+			GameInfo info = getGameInfo(gameId);
+			websocket.sendMessageToAllClients(info);
+
+		} else {
+			throw new GameNotFoundException();
+		}
+	}
+	
+	private void removeGoal(Game game, TeamColor team) {
+		Statistics stats = game.getStats();
+		if(stats.getTeamScore(team) > 0) {
+			changeScore(stats, team, -1);
+			stats.getGoals().remove(stats.lastGoalIndex());
+			statsService.saveStats(stats);
 		}
 	}
 

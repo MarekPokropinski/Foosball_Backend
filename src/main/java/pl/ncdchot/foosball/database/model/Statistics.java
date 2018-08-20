@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import pl.ncdchot.foosball.game.TeamColor;
+
 @Entity
 public class Statistics extends BaseModel {
 	private int redScore;
@@ -36,6 +38,8 @@ public class Statistics extends BaseModel {
 		this.blueScore = blueScore;
 	}
 
+	public int getTeamScore(TeamColor team) { return team.equals(TeamColor.RED) ?  getRedScore() :  getBlueScore(); }
+
 	public int getRedSeries() {
 		return redSeries;
 	}
@@ -62,6 +66,9 @@ public class Statistics extends BaseModel {
 
 	public List<Goal> getGoals() {
 		return goals;
+	}
+	public int lastGoalIndex() {
+		return goals.size()-1;
 	}
 
 	public void setGoals(List<Goal> goals) {
