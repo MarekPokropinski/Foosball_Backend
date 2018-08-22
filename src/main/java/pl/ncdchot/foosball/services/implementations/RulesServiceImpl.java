@@ -46,4 +46,9 @@ public class RulesServiceImpl implements RulesService {
 		}
 	}
 
+	@Override
+	public boolean isRulesExist(Rules rules) {
+		return rulesRepository.existsByScoreLimitAndTimeLimit(rules.getScoreLimit(), rules.getTimeLimit());
+	}
+
 }

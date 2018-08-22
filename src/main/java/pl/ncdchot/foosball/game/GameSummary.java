@@ -19,6 +19,14 @@ public class GameSummary {
 		this.blueLongestSeries = blueLongestSeries;
 	}
 
+	public GameSummary(GameSummary summary) {
+		this.redScore = summary.redScore;
+		this.blueScore = summary.blueScore;
+		this.gameDuration = summary.gameDuration;
+		this.redLongestSeries = summary.redLongestSeries;
+		this.blueLongestSeries = summary.blueLongestSeries;
+	}
+
 	public int getRedScore() {
 		return redScore;
 	}
