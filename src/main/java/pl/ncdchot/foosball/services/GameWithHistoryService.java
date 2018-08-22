@@ -7,11 +7,10 @@ import pl.ncdchot.foosball.exceptions.UserNotExist;
 import pl.ncdchot.foosball.game.GameSummary;
 
 public interface GameWithHistoryService extends GameService {
-    long startGame(long[] users, Rules rules, GameType gameType) throws UserNotExist;
+	long startGame(long[] users, Rules rules, GameType gameType) throws UserNotExist;
 
-    long startGame(long[] users, Rules rules) throws UserNotExist;
+	long startGame(long[] users, Rules rules) throws UserNotExist;
 
-//    long startGame(long[] users) throws UserNotExist;
-
-    GameSummary getSummary(long gameId) throws GameNotFoundException;
+	@Override
+	GameSummary getSummary(long gameId) throws GameNotFoundException;
 }

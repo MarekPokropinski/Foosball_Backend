@@ -29,14 +29,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<User> getUserByExternalID(long externalID) {
-		return userRepository.findByExternalID(externalID);
+	public void saveUser(User user) {
+		userRepository.save(user);
 	}
 
 	@Override
-	public void saveUser(User user) {
-		User temp = userRepository.save(user);
+	public User getUserByExternalID(long externalId) {
+		Optional<User> optUser = userRepository.findByExternalID(externalId);
+		return optUser.orElseGet(() -> userRepository.save(new User(externalId)));
 	}
-
-
 }

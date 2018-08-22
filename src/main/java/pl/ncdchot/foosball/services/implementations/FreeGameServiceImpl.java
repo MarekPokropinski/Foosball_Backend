@@ -4,6 +4,7 @@ import org.jboss.logging.Logger;
 import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.Game;
+import pl.ncdchot.foosball.database.model.GameType;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameInfo;
@@ -12,7 +13,7 @@ import pl.ncdchot.foosball.services.FreeGameService;
 @Service
 public class FreeGameServiceImpl extends GameServiceImpl implements FreeGameService {
 	private static int SCORE_LIMIT = 10;
-	private static final Rules NORMAL_RULES = new Rules(SCORE_LIMIT);
+	private static final Rules FREE_RULES = new Rules(SCORE_LIMIT);
 	private static final Logger LOG = Logger.getLogger(FreeGameServiceImpl.class);
 
 	FreeGameServiceImpl() {
@@ -20,7 +21,7 @@ public class FreeGameServiceImpl extends GameServiceImpl implements FreeGameServ
 
 	@Override
 	public long startGame() {
-		Game game = getCurrentGame(rulesService.getRules(NORMAL_RULES));
+		Game game = getCurrentGame(GameType.FREE, rulesService.getRules(FREE_RULES));
 		try {
 			GameInfo info = getGameInfo(game.getId());
 			websocket.sendMessageToAllClients(info);
