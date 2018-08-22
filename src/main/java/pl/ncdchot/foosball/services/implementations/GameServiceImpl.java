@@ -111,7 +111,7 @@ public class GameServiceImpl implements GameService {
 		stats.getGoals().add(goalService.getNewGoal(team));
 		statsService.saveStats(stats);
 	}
-	
+
 	private void changeScore(Statistics stats, TeamColor team, int points) {
 		switch (team) {
 		case RED:
@@ -141,7 +141,7 @@ public class GameServiceImpl implements GameService {
 			throw new GameNotFoundException();
 		}
 	}
-	
+
 	@Override
 	public void revertGoal(long gameId, TeamColor team) throws GameNotFoundException {
 		if (isLive(gameId) && rulesService.checkRules(getGame(gameId))) {
@@ -154,12 +154,25 @@ public class GameServiceImpl implements GameService {
 			throw new GameNotFoundException();
 		}
 	}
-	
+
+	private Goal getLastGoalByTeam(Statistics stats, TeamColor team) {
+		stats.getGoals().sort((a, b) -> (b.getTime().compareTo(a.getTime())));
+		Goal toRemoval = null;
+		for (Goal g : stats.getGoals()) {
+			if (g.getTeam().equals(team)) {
+				toRemoval = g;
+				break;
+			}
+		}
+		return toRemoval;
+	}
+
 	private void removeGoal(Game game, TeamColor team) {
 		Statistics stats = game.getStats();
-		if(stats.getTeamScore(team) > 0) {
+		if (stats.getTeamScore(team) > 0) {
 			changeScore(stats, team, -1);
-			stats.getGoals().remove(stats.lastGoalIndex());
+			Goal toRemoval = getLastGoalByTeam(stats, team);
+			stats.getGoals().remove(toRemoval);
 			statsService.saveStats(stats);
 		}
 	}
@@ -253,7 +266,7 @@ public class GameServiceImpl implements GameService {
 
 		boolean isGameFinished = false;
 		Game game = getGame(gameId);
-		if(game.getEndDate() != null) {
+		if (game.getEndDate() != null) {
 			isGameFinished = true;
 		}
 		Statistics stats = game.getStats();
