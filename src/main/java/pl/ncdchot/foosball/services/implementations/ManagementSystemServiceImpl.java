@@ -10,17 +10,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import pl.ncdchot.foosball.services.TournamentSystemService;
+import pl.ncdchot.foosball.database.model.User;
+import pl.ncdchot.foosball.exceptions.UserNotExist;
+import pl.ncdchot.foosball.modelDTO.UserDTO;
+import pl.ncdchot.foosball.services.ManagementSystemService;
+import pl.ncdchot.foosball.services.UserService;
 
 @Service
-public class TournamentSystemServiceImpl implements TournamentSystemService {
+public class ManagementSystemServiceImpl implements ManagementSystemService {
 	private static final String USER_URL = "http://hotdev:8080/usrmgmt/user/";
-	private static final Logger LOG = Logger.getLogger(TournamentSystemServiceImpl.class);
+	private static final Logger LOG = Logger.getLogger(ManagementSystemServiceImpl.class);
 	private RestTemplate restTemplate;
+	private UserService userService;
 
 	@Autowired
-	TournamentSystemServiceImpl(RestTemplate restTemplate) {
+	ManagementSystemServiceImpl(RestTemplate restTemplate, UserService userService) {
 		this.restTemplate = restTemplate;
+		this.userService = userService;
 	}
 
 	@Override
@@ -40,5 +46,15 @@ public class TournamentSystemServiceImpl implements TournamentSystemService {
 			}
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	public User getUserByExternalId(long externalId) throws UserNotExist {
+		UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+		if (user == null) {
+			throw new UserNotExist(externalId);
+		} else {
+			return userService.getUserByExternalId(externalId);
+		}
 	}
 }

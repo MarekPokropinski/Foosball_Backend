@@ -4,23 +4,23 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class User {
+public class User extends BaseModel {
 	@Id
-	private long id;
+	private long externalID;
 
 	public User() {
 
 	}
 
-	public User(long id) {
-		this.id = id;
+	public User(long externalID) {
+		this.externalID = externalID;
 	}
 
-	public long getUserId() {
-		return id;
+	public long getExternalID() {
+		return externalID;
 	}
 
-	public void setUserId(long userId) {
-		this.id = userId;
+	public void setExternalID(long externalID) {
+		this.externalID = externalID;
 	}
 }

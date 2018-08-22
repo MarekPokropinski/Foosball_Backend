@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import pl.ncdchot.foosball.services.TournamentSystemService;
+import pl.ncdchot.foosball.services.ManagementSystemService;
 
 @RestController
 public class UsersController {
-	private TournamentSystemService tsService;
+	private ManagementSystemService tsService;
 
 	@Autowired
-	UsersController(TournamentSystemService tsService) {
+	UsersController(ManagementSystemService tsService) {
 		this.tsService = tsService;
 	}
 
