@@ -27,4 +27,16 @@ public class UserServiceImpl implements UserService {
 			return user;
 		}
 	}
+
+	@Override
+	public Optional<User> getUserByExternalID(long externalID) {
+		return userRepository.findByExternalID(externalID);
+	}
+
+	@Override
+	public void saveUser(User user) {
+		User temp = userRepository.save(user);
+	}
+
+
 }
