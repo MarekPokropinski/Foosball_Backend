@@ -9,11 +9,11 @@ import pl.ncdchot.foosball.exceptions.UserNotExist;
 
 @Service
 public class NormalGameServiceImpl extends GameWithHistoryServiceImpl {
-	private static final Logger LOG = Logger.getLogger(NormalGameServiceImpl.class);
+    private static final Logger LOG = Logger.getLogger(NormalGameServiceImpl.class);
 
-	@Override
-	public long startGame(long[] users, Rules rules) throws UserNotExist {
-		LOG.info("Started normal game");
-		return super.startGame(users, rules, GameType.NORMAL);
-	}
+    @Override
+    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExist {
+        LOG.info("Started ranked game");
+        return super.startGame(redTeamUsers, blueTeamUsers, rules, GameType.NORMAL);
+    }
 }
