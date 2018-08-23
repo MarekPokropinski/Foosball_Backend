@@ -10,23 +10,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.exceptions.UserNotExist;
 import pl.ncdchot.foosball.modelDTO.UserDTO;
 import pl.ncdchot.foosball.services.ManagementSystemService;
-import pl.ncdchot.foosball.services.UserService;
 
 @Service
 public class ManagementSystemServiceImpl implements ManagementSystemService {
 	private static final String USER_URL = "http://hotdev:8080/usrmgmt/user/";
 	private static final Logger LOG = Logger.getLogger(ManagementSystemServiceImpl.class);
 	private RestTemplate restTemplate;
-	private UserService userService;
 
 	@Autowired
-	ManagementSystemServiceImpl(RestTemplate restTemplate, UserService userService) {
+	ManagementSystemServiceImpl(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
-		this.userService = userService;
 	}
 
 	@Override
@@ -49,12 +45,18 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 	}
 
 	@Override
-	public User getUserByExternalId(long externalId) throws UserNotExist {
+	public UserDTO getExternalUserByExternalId(long externalId) throws UserNotExist {
 		UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
-		if (user == null) {
-			throw new UserNotExist(externalId);
+		if (user != null) {
+			return user;
 		} else {
-			return userService.getUserByExternalID(externalId);
+			throw new UserNotExist(externalId);
 		}
+	}
+
+	@Override
+	public boolean isUserInExternalService(long externalId) {
+		UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+		return user != null;
 	}
 }
