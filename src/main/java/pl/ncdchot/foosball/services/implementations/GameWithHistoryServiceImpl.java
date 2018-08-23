@@ -16,7 +16,7 @@ import pl.ncdchot.foosball.exceptions.UserNotExist;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.GameWithHistoryInfo;
-import pl.ncdchot.foosball.game.GameWithIdentificationSummary;
+import pl.ncdchot.foosball.game.GameWithHistorySummary;
 import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.services.GameService;
 import pl.ncdchot.foosball.services.GameWithHistoryService;
@@ -107,7 +107,7 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
 			blueTeamIds.add(user.getExternalID());
 		}
 
-		return new GameWithIdentificationSummary(baseSummary, redTeamIds, blueTeamIds);
+		return new GameWithHistorySummary(baseSummary, redTeamIds, blueTeamIds);
 	}
 
 	@Override
