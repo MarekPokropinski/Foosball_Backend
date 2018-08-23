@@ -1,5 +1,6 @@
 package pl.ncdchot.foosball.database.model;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class Statistics extends BaseModel {
 	private int blueScore;
 	private int redSeries;
 	private int blueSeries;
-	private long duration;
+	private Duration duration;
 	@OneToMany
 	private List<Goal> goals = new ArrayList<Goal>();
 
@@ -38,7 +39,9 @@ public class Statistics extends BaseModel {
 		this.blueScore = blueScore;
 	}
 
-	public int getTeamScore(TeamColor team) { return team.equals(TeamColor.RED) ?  getRedScore() :  getBlueScore(); }
+	public int getTeamScore(TeamColor team) {
+		return team.equals(TeamColor.RED) ? getRedScore() : getBlueScore();
+	}
 
 	public int getRedSeries() {
 		return redSeries;
@@ -56,19 +59,20 @@ public class Statistics extends BaseModel {
 		this.blueSeries = blueSeries;
 	}
 
-	public long getDuration() {
+	public Duration getDuration() {
 		return duration;
 	}
 
-	public void setDuration(long duration) {
+	public void setDuration(Duration duration) {
 		this.duration = duration;
 	}
 
 	public List<Goal> getGoals() {
 		return goals;
 	}
+
 	public int lastGoalIndex() {
-		return goals.size()-1;
+		return goals.size() - 1;
 	}
 
 	public void setGoals(List<Goal> goals) {

@@ -1,15 +1,16 @@
 package pl.ncdchot.foosball.database.model;
 
+import java.time.Duration;
+
 import javax.persistence.Entity;
 
 @Entity
 public class Rules extends BaseModel {
-	private int timeLimit;
+	private static final Duration NO_TIME_LIMIT = Duration.ZERO;
+	private static final int NO_CREATOR = -1;
+	private Duration timeLimit;
 	private int scoreLimit;
 	private long creatorId;
-
-	private static final int NO_TIME_LIMIT = 0;
-	private static final int NO_CREATOR = -1;
 
 	public Rules() {
 		timeLimit = NO_TIME_LIMIT;
@@ -21,22 +22,21 @@ public class Rules extends BaseModel {
 		this.scoreLimit = scoreLimit;
 	}
 
-	public Rules(int scoreLimit, int timeLimit) {
+	public Rules(int scoreLimit, Duration timeLimit) {
 		this(scoreLimit);
 		this.timeLimit = timeLimit;
 	}
 
-	public Rules(int timeLimit, int scoreLimit, long creatorId) {
-		this.timeLimit = timeLimit;
-		this.scoreLimit = scoreLimit;
+	public Rules(int scoreLimit, Duration timeLimit, long creatorId) {
+		this(scoreLimit, timeLimit);
 		this.creatorId = creatorId;
 	}
 
-	public int getTimeLimit() {
+	public Duration getTimeLimit() {
 		return timeLimit;
 	}
 
-	public void setTimeLimit(int maxTime) {
+	public void setTimeLimit(Duration maxTime) {
 		this.timeLimit = maxTime;
 	}
 

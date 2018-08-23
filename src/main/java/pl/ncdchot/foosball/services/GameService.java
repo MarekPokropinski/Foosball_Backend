@@ -38,4 +38,6 @@ public interface GameService {
 	boolean isLive(long gameId);
 
 	Statistics createNewStats();
+
+	void updateDuration(Game game);
 }
