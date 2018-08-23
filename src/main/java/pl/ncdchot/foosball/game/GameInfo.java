@@ -15,6 +15,14 @@ public class GameInfo {
 		this.finished = finished;
 	}
 
+	public GameInfo(GameInfo info) {
+		this.id = info.id;
+		this.redScore = info.redScore;
+		this.blueScore = info.blueScore;
+		this.time = info.time;
+		this.finished = info.finished;
+	}
+
 	public GameInfo() {
 
 	}
@@ -58,5 +66,4 @@ public class GameInfo {
 	public void setId(long id) {
 		this.id = id;
 	}
-
 }

@@ -271,7 +271,6 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public GameInfo getGameInfo(long gameId) throws GameNotFoundException {
-
 		boolean isGameFinished = false;
 		Game game = getGame(gameId);
 		if (game.getEndDate() != null) {

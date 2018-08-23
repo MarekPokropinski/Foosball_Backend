@@ -15,6 +15,7 @@ import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.exceptions.UserNotExist;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
+import pl.ncdchot.foosball.game.GameWithHistoryInfo;
 import pl.ncdchot.foosball.game.GameWithHistorySummary;
 import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.services.GameService;
@@ -107,5 +108,14 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
 		}
 
 		return new GameWithHistorySummary(baseSummary, redTeamIds, blueTeamIds);
+	}
+
+	@Override
+	public GameInfo getGameInfo(long gameId) throws GameNotFoundException {
+		GameInfo base = super.getGameInfo(gameId);
+		Game game = gameService.getGame(gameId);
+		Long[] redTeamIds = game.getRedTeam().getUsers().stream().map(user -> user.getId()).toArray(Long[]::new);
+		Long[] blueTeamIds = game.getBlueTeam().getUsers().stream().map(user -> user.getId()).toArray(Long[]::new);
+		return new GameWithHistoryInfo(base, game.getRules().getTimeLimit().toMillis(), redTeamIds, blueTeamIds);
 	}
 }
