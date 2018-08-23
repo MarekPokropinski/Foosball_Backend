@@ -143,7 +143,6 @@ public class GameServiceImpl implements GameService {
 				info.setFinished(true);
 				finishGame(gameId);
 			} else {
-				System.out.println(info.getClass());
 				websocket.sendMessageToAllClients(info);
 			}
 		} else {

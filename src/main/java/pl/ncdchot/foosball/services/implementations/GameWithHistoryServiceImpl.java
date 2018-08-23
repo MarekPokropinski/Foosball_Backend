@@ -116,9 +116,6 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
 		Game game = gameService.getGame(gameId);
 		Long[] redTeamIds = game.getRedTeam().getUsers().stream().map(user -> user.getId()).toArray(Long[]::new);
 		Long[] blueTeamIds = game.getBlueTeam().getUsers().stream().map(user -> user.getId()).toArray(Long[]::new);
-
-		System.out.println("hello");
-
 		return new GameWithHistoryInfo(base, game.getRules().getTimeLimit().toMillis(), redTeamIds, blueTeamIds);
 	}
 }
