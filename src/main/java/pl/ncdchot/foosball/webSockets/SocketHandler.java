@@ -25,6 +25,8 @@ public class SocketHandler extends TextWebSocketHandler {
 		WebSocketMessage<String> message = getAsWebSocketMessage(o);
 		List<WebSocketSession> toRemove = new ArrayList<>();
 
+		System.out.println(message.getPayload());
+
 		for (WebSocketSession client : sessionList) {
 			try {
 				client.sendMessage(message);
