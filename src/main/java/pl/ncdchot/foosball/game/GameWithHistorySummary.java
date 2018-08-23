@@ -2,15 +2,15 @@ package pl.ncdchot.foosball.game;
 
 import java.util.List;
 
-public class GameWithIdentificationSummary extends GameSummary {
+public class GameWithHistorySummary extends GameSummary {
 	private List<Long> redTeamIds;
 	private List<Long> blueTeamIds;
 
-	public GameWithIdentificationSummary() {
+	public GameWithHistorySummary() {
 
 	}
 
-	public GameWithIdentificationSummary(GameSummary baseSummary, List<Long> redTeamIds, List<Long> blueTeamIds) {
+	public GameWithHistorySummary(GameSummary baseSummary, List<Long> redTeamIds, List<Long> blueTeamIds) {
 		super(baseSummary);
 		this.redTeamIds = redTeamIds;
 		this.blueTeamIds = blueTeamIds;

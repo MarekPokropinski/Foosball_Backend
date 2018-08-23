@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.database.repository.UserRepository;
+import pl.ncdchot.foosball.exceptions.UserNotExist;
+import pl.ncdchot.foosball.services.ManagementSystemService;
 import pl.ncdchot.foosball.services.UserService;
 
 @Service
@@ -14,28 +16,23 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	ManagementSystemService managementSystemService;
 
 	@Override
-	public User getUser(long userId) {
-		Optional<User> optUser = userRepository.findById(userId);
+	public Optional<User> getUser(long userId) {
+		return userRepository.findById(userId);
+	}
 
+	@Override
+	public User getUserByExternalID(long externalId) throws UserNotExist {
+		Optional<User> optUser = userRepository.findByExternalID(externalId);
 		if (optUser.isPresent()) {
 			return optUser.get();
+		} else if (managementSystemService.isUserInExternalService(externalId)) {
+			return userRepository.save(new User(externalId));
 		} else {
-			User user = new User();
-			userRepository.save(user);
-			return user;
+			throw new UserNotExist(externalId);
 		}
-	}
-
-	@Override
-	public void saveUser(User user) {
-		userRepository.save(user);
-	}
-
-	@Override
-	public User getUserByExternalID(long externalId) {
-		Optional<User> optUser = userRepository.findByExternalID(externalId);
-		return optUser.orElseGet(() -> userRepository.save(new User(externalId)));
 	}
 }
