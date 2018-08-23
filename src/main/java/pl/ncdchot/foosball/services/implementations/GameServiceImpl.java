@@ -1,5 +1,6 @@
 package pl.ncdchot.foosball.services.implementations;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
 
@@ -100,7 +101,7 @@ public class GameServiceImpl implements GameService {
 			if (game.getEndDate() == null) {
 				game.setEndDate(new Date());
 				Statistics stats = game.getStats();
-				stats.setDuration((game.getEndDate().getTime() - game.getStartDate().getTime()) / 1000);
+				stats.setDuration(Duration.ofMillis(game.getEndDate().getTime() - game.getStartDate().getTime()));
 				statsService.saveStats(stats);
 				gameRepository.save(game);
 				userHistoryService.updateHistory(game);
@@ -281,6 +282,12 @@ public class GameServiceImpl implements GameService {
 				getTimeDifference(game.getStartDate()), isGameFinished);
 
 		return info;
+	}
+
+	@Override
+	public void updateDuration(Game game) {
+		Statistics stats = game.getStats();
+		stats.setDuration(Duration.ofMillis(new Date().getTime() - game.getStartDate().getTime()));
 	}
 
 }
