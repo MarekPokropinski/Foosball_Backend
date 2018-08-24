@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import pl.ncdchot.foosball.exceptions.UserByCardIDNotExistException;
+import pl.ncdchot.foosball.exceptions.UserByNickNoExistException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.modelDTO.UserDTO;
 import pl.ncdchot.foosball.services.ManagementSystemService;
@@ -69,5 +70,37 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
         } else {
             throw new UserByCardIDNotExistException(cardID);
         }
+    }
+
+    @Override
+    public UserDTO getUserByNickOrCardID(String textValue) throws
+            UserByCardIDNotExistException,
+            UserByNickNoExistException,
+            UserNotExistException {
+
+        if (isCardID(textValue)) {
+            return getUserByCardID(Long.valueOf(textValue));
+        } else if (isNickName(textValue)) {
+            return getUserByNick(textValue);
+        } else throw new UserNotExistException(Long.valueOf(textValue));
+    }
+
+    private boolean isNickName(String textValue) {
+        String regex = "[a-zA-Z_0-9]*";
+        return textValue.matches(regex) && textValue.length() > 0;
+    }
+
+    private boolean isCardID(String textValue) {
+        String regex = "[0-9]+";
+        return textValue.matches(regex) && textValue.length() == 10;
+    }
+
+    private UserDTO getUserByNick(String nickName) throws UserByNickNoExistException {
+        String url = String.format("%s/get/by-nick/%s", USER_URL, nickName);
+        UserDTO user = restTemplate.getForObject(url, UserDTO.class);
+        if (user == null) {
+            throw new UserByNickNoExistException(nickName);
+        }
+        return user;
     }
 }

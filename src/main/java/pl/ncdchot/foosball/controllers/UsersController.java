@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.exceptions.UserByCardIDNotExistException;
+import pl.ncdchot.foosball.exceptions.UserByNickNoExistException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.modelDTO.UserDTO;
 import pl.ncdchot.foosball.services.ManagementSystemService;
@@ -54,6 +55,21 @@ public class UsersController {
             return ResponseEntity.ok(user);
         } catch (UserByCardIDNotExistException exception) {
             throw exception;
+        }
+    }
+
+    @GetMapping("/getByNickOrId")
+    @ResponseBody
+    public ResponseEntity<UserDTO> getUserByNickOrCard(@RequestParam String value) throws UserByNickNoExistException, UserNotExistException, UserByCardIDNotExistException {
+        try {
+            UserDTO user = managementSystemService.getUserByNickOrCardID(value);
+            return ResponseEntity.ok(user);
+        } catch (UserByCardIDNotExistException e) {
+           throw e;
+        } catch (UserNotExistException e) {
+            throw e;
+        } catch (UserByNickNoExistException e) {
+            throw e;
         }
     }
 }
