@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
-import pl.ncdchot.foosball.exceptions.UserNotExist;
+import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.services.GameWithHistoryService;
@@ -38,8 +38,8 @@ public class RankedGameController {
             long id = service.startGame(redTeamUsersID, blueTeamUsersID, new Rules());
             LOG.info("Starting Ranked game id: " + id);
             return new ResponseEntity<>(String.valueOf(id), HttpStatus.OK);
-        } catch (UserNotExist userNotExist) {
-            LOG.warn(userNotExist.getMessage());
+        } catch (UserNotExistException userNotExistException) {
+            LOG.warn(userNotExistException.getMessage());
             return ResponseEntity.badRequest().body("User not exist");
         }
     }

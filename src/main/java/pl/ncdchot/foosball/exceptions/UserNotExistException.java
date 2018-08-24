@@ -1,10 +1,10 @@
 package pl.ncdchot.foosball.exceptions;
 
-public class UserNotExist extends Throwable {
+public class UserNotExistException extends Throwable {
 	private static final long serialVersionUID = -8851281773946507170L;
 	private long id;
 
-	public UserNotExist(long userID) {
+	public UserNotExistException(long userID) {
 		this.id = userID;
 	}
 
