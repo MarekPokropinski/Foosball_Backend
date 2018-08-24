@@ -4,7 +4,7 @@ import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.ncdchot.foosball.database.model.*;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
-import pl.ncdchot.foosball.exceptions.UserNotExist;
+import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.GameWithHistoryInfo;
@@ -35,7 +35,7 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
     private GameService gameService;
 
     @Override
-    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules, GameType gameType) throws UserNotExist {
+    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules, GameType gameType) throws UserNotExistException {
         Game game = createGame(redTeamUsers, blueTeamUsers, rules, gameType);
         try {
             GameInfo gameInfo = getGameInfo(game.getId());
@@ -46,7 +46,7 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
         return game.getId();
     }
 
-    private Game createGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules, GameType gameType) throws UserNotExist {
+    private Game createGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules, GameType gameType) throws UserNotExistException {
         Team redTeam = createTeam(redTeamUsers);
         Team blueTeam = createTeam(blueTeamUsers);
 
@@ -54,7 +54,7 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
         return getCurrentGame(gameType, savedRules, redTeam, blueTeam);
     }
 
-    private Team createTeam(long[] users) throws UserNotExist {
+    private Team createTeam(long[] users) throws UserNotExistException {
         Team team;
         User firstUser = getUser(
                 users[FIRST_PLAYER_INDEX]);
@@ -69,7 +69,7 @@ public abstract class GameWithHistoryServiceImpl extends GameServiceImpl impleme
         return team;
     }
 
-    private User getUser(long userID) throws UserNotExist {
+    private User getUser(long userID) throws UserNotExistException {
         return userService.getUserByExternalID(userID);
     }
 

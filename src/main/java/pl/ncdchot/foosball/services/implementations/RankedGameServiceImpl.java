@@ -4,7 +4,7 @@ import org.jboss.logging.Logger;
 import org.springframework.stereotype.Service;
 import pl.ncdchot.foosball.database.model.GameType;
 import pl.ncdchot.foosball.database.model.Rules;
-import pl.ncdchot.foosball.exceptions.UserNotExist;
+import pl.ncdchot.foosball.exceptions.UserNotExistException;
 
 import java.time.Duration;
 
@@ -19,7 +19,7 @@ public class RankedGameServiceImpl extends GameWithHistoryServiceImpl {
             Duration.ofSeconds(RANKED_TIME_IN_SEC_LIMIT));
 
     @Override
-    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExist {
+    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExistException {
         LOG.info("Started ranked game");
         return super.startGame(redTeamUsers, blueTeamUsers, RANKED_GAME_RULES, GameType.RANKED);
     }
