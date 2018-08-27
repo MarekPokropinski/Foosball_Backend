@@ -1,8 +1,11 @@
 package pl.ncdchot.foosball.services.implementations;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import pl.ncdchot.foosball.database.repository.GameRepository;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
+import pl.ncdchot.foosball.game.GameWithHistorySummary;
 import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.services.GameService;
 import pl.ncdchot.foosball.services.GoalService;
@@ -287,6 +291,27 @@ public class GameServiceImpl implements GameService {
 	public void updateDuration(Game game) {
 		Statistics stats = game.getStats();
 		stats.setDuration(Duration.ofMillis(new Date().getTime() - game.getStartDate().getTime()));
+	}
+
+	@Override
+	public List<GameSummary> getLastGames() {
+		List<Game> games = gameRepository.findTop10ByOrderByStartDate();
+		List<GameSummary> lastGames = new ArrayList<>();
+		for (Game game : games) {
+			Statistics stats = game.getStats();
+			GameSummary summary = new GameSummary(stats.getRedScore(), stats.getBlueScore(),
+					stats.getDuration().toMillis(), stats.getRedSeries(), stats.getBlueSeries());
+			if (game.getType() == GameType.FREE) {
+				lastGames.add(summary);
+			} else {
+				List<Long> redTeamIds = game.getRedTeam().getUsers().stream().map(x -> x.getId())
+						.collect(Collectors.toList());
+				List<Long> blueTeamIds = game.getBlueTeam().getUsers().stream().map(x -> x.getId())
+						.collect(Collectors.toList());
+				lastGames.add(new GameWithHistorySummary(summary, redTeamIds, blueTeamIds));
+			}
+		}
+		return lastGames;
 	}
 
 }
