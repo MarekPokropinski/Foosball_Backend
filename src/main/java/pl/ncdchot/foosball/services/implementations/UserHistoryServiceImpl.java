@@ -1,10 +1,15 @@
 package pl.ncdchot.foosball.services.implementations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
 
 import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.GameType;
@@ -13,7 +18,10 @@ import pl.ncdchot.foosball.database.model.Team;
 import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.database.model.UserHistory;
 import pl.ncdchot.foosball.database.repository.UserHistoryRepository;
+import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.TeamColor;
+import pl.ncdchot.foosball.modelDTO.HistoryDTO;
+import pl.ncdchot.foosball.services.ManagementSystemService;
 import pl.ncdchot.foosball.services.UserHistoryService;
 
 @Service
@@ -23,11 +31,15 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 	private static final double ELO_WIN_RESULT = 1.0;
 	private static final double ELO_DRAW_RESULT = 0.5;
 	private static final double ELO_LOSS_RESULT = 0.0;
+	private static final Logger LOG = Logger.getLogger(UserHistoryServiceImpl.class);
 	private UserHistoryRepository userHistoryRepository;
+	private ManagementSystemService managementSystemService;
 
 	@Autowired
-	UserHistoryServiceImpl(UserHistoryRepository userHistoryRepository) {
+	UserHistoryServiceImpl(UserHistoryRepository userHistoryRepository,
+			ManagementSystemService managementSystemService) {
 		this.userHistoryRepository = userHistoryRepository;
+		this.managementSystemService = managementSystemService;
 	}
 
 	@Override
@@ -202,4 +214,38 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 			updateHistoryOfRankedGame(game, winningTeam);
 		}
 	}
+
+	@Override
+	public List<HistoryDTO> getAllHistory() {
+		Iterable<UserHistory> allHistoriesIterable = userHistoryRepository.findAll();
+		List<UserHistory> allHistories = Lists.newArrayList(allHistoriesIterable);
+
+		List<HistoryDTO> histories = new ArrayList<>();
+		for (UserHistory history : allHistories) {
+			String nick;
+			try {
+				nick = managementSystemService.getExternalUserByExternalId(history.getUser().getExternalID()).getNick();
+				histories.add(new HistoryDTO(history, nick));
+			} catch (UserNotExistException e) {
+				LOG.warn("Tried to get history of player who doesn't exist");
+			}
+		}
+
+		List<Double> soloElo = new ArrayList<Double>();
+		List<Double> duoElo = new ArrayList<Double>();
+
+		for (UserHistory history : allHistories) {
+			soloElo.add(new Double(history.getSoloEloPoints()));
+			duoElo.add(new Double(history.getTeamEloPoints()));
+		}
+		soloElo.sort((a, b) -> Double.compare(b, a));
+		duoElo.sort((a, b) -> Double.compare(b, a));
+
+		for (int i = 0; i < histories.size(); i++) {
+			histories.get(i).setSoloRankingPos(soloElo.indexOf(allHistories.get(i).getSoloEloPoints()));
+			histories.get(i).setDuoRankingPos(soloElo.indexOf(allHistories.get(i).getTeamEloPoints()));
+		}
+		return histories;
+	}
+
 }
