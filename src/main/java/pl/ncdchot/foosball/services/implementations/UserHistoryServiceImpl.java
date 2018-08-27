@@ -243,9 +243,8 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 
 		for (int i = 0; i < histories.size(); i++) {
 			histories.get(i).setSoloRankingPos(soloElo.indexOf(allHistories.get(i).getSoloEloPoints()));
-			histories.get(i).setDuoRankingPos(soloElo.indexOf(allHistories.get(i).getTeamEloPoints()));
+			histories.get(i).setDuoRankingPos(duoElo.indexOf(allHistories.get(i).getTeamEloPoints()));
 		}
 		return histories;
 	}
-
 }

@@ -1,5 +1,7 @@
 package pl.ncdchot.foosball.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,8 @@ public class HistoryController {
 	private UserHistoryService userHistoryService;
 
 	@GetMapping("/leaderboards")
-	public ResponseEntity<HistoryDTO[]> getLeaderBoards() {
-		userHistoryService.getAllHistory();
-		return new ResponseEntity<>(new HistoryDTO[0], HttpStatus.OK);
+	public ResponseEntity<List<HistoryDTO>> getLeaderBoards() {
+		List<HistoryDTO> historyList = userHistoryService.getAllHistory();
+		return new ResponseEntity<>(historyList, HttpStatus.OK);
 	}
 }
