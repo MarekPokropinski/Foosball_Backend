@@ -35,7 +35,7 @@ public class FreeGameViewController {
 	}
 
 	@GetMapping("/goal")
-	public ResponseEntity<?> goalEndpoint(@RequestParam TeamColor team, @RequestParam long gameId) {
+	public ResponseEntity<Void> goalEndpoint(@RequestParam TeamColor team, @RequestParam long gameId) {
 		LOG.info(String.format("Goal for game id: %s for team: %s", gameId, team));
 		try {
 			service.goal(gameId, team);

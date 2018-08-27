@@ -1,7 +1,5 @@
 package pl.ncdchot.foosball.services.implementations;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Optional;
 
 import org.jboss.logging.Logger;
@@ -27,17 +25,16 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 
 	@Override
 	public Optional<Long> getUserIdByNick(String nick) {
-		List<?> listOfAllUsers;
+		UserDTO[] listOfAllUsers;
 		try {
-			listOfAllUsers = restTemplate.getForObject(USER_URL + "all", List.class);
+			listOfAllUsers = restTemplate.getForObject(USER_URL + "all", UserDTO[].class);
 		} catch (RestClientException e) {
 			LOG.warn("Failed to get users from user management");
 			return Optional.empty();
 		}
-		for (Object userObject : listOfAllUsers) {
-			LinkedHashMap<?, ?> user = (LinkedHashMap<?, ?>) userObject;
-			if (user.get("nick").equals(nick)) {
-				Long id = new Long((Integer) user.get("id"));
+		for (UserDTO user : listOfAllUsers) {
+			if (user.getNick().equals(nick)) {
+				Long id = Long.parseLong(user.getId());
 				return Optional.of(id);
 			}
 		}
