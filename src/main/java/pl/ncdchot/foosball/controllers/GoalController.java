@@ -26,7 +26,7 @@ public class GoalController {
 	private GameService service;
 
 	@PostMapping("/goal")
-	public ResponseEntity<?> goalEndpoint(@RequestParam TeamColor team) {
+	public ResponseEntity<Void> goalEndpoint(@RequestParam TeamColor team) {
 		LOG.info(String.format("Goal for game for team: %s", team));
 		Optional<Game> game = service.getLiveGame();
 		if (!game.isPresent()) {
@@ -42,7 +42,7 @@ public class GoalController {
 	}
 
 	@PostMapping("/revertGoal")
-	public ResponseEntity<?> revertGoalEndpoint(@RequestParam TeamColor team) {
+	public ResponseEntity<Void> revertGoalEndpoint(@RequestParam TeamColor team) {
 		LOG.info(String.format("Revert goal for team: %s", team));
 		Optional<Game> game = service.getLiveGame();
 		if (!game.isPresent()) {
