@@ -26,6 +26,7 @@ import pl.ncdchot.foosball.services.UserHistoryService;
 
 @Service
 public class UserHistoryServiceImpl implements UserHistoryService {
+	private static final String winRatioFormat = "%.2f";
 	private static final double ELO_DIFFERENCE_FACTOR = 400.0;
 	private static final double ELO_BASE_10 = 10.0;
 	private static final double ELO_WIN_RESULT = 1.0;
@@ -225,7 +226,7 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 			String nick;
 			try {
 				nick = managementSystemService.getExternalUserByExternalId(history.getUser().getExternalID()).getNick();
-				histories.add(new HistoryDTO(history, nick));
+				histories.add(getHistoryDTO(history, nick));
 			} catch (UserNotExistException e) {
 				LOG.warn("Tried to get history of player who doesn't exist");
 			}
@@ -242,9 +243,44 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 		duoElo.sort((a, b) -> Double.compare(b, a));
 
 		for (int i = 0; i < histories.size(); i++) {
-			histories.get(i).setSoloRankingPos(soloElo.indexOf(allHistories.get(i).getSoloEloPoints()));
-			histories.get(i).setDuoRankingPos(duoElo.indexOf(allHistories.get(i).getTeamEloPoints()));
+			int soloRankingPos = soloElo.indexOf(allHistories.get(i).getSoloEloPoints()) + 1;
+			int duoRankingPos = duoElo.indexOf(allHistories.get(i).getTeamEloPoints()) + 1;
+			histories.get(i).setSoloRankingPos(String.valueOf(soloRankingPos));
+			histories.get(i).setDuoRankingPos(String.valueOf(duoRankingPos));
 		}
 		return histories;
+	}
+
+	private HistoryDTO getHistoryDTO(UserHistory history, String nick) {
+		return new HistoryDTO(nick, String.valueOf(history.getNormalPlayed()),
+				String.format(winRatioFormat, getNormalWinRatio(history)),
+				String.valueOf(history.getRankedSoloPlayed()),
+				String.format(winRatioFormat, getRankedSoloWinRatio(history)),
+				String.valueOf(history.getRankedDuoPlayed()),
+				String.format(winRatioFormat, getRankedDuoWinRatio(history)), "", "");
+	}
+
+	private float getNormalWinRatio(UserHistory history) {
+		if (history.getNormalPlayed() != 0) {
+			return 100.0f * history.getNormalWins() / history.getNormalPlayed();
+		} else {
+			return 0.0f;
+		}
+	}
+
+	private float getRankedSoloWinRatio(UserHistory history) {
+		if (history.getRankedSoloPlayed() != 0) {
+			return 100.0f * history.getRankedSoloWins() / history.getRankedSoloPlayed();
+		} else {
+			return 0.0f;
+		}
+	}
+
+	private float getRankedDuoWinRatio(UserHistory history) {
+		if (history.getRankedDuoPlayed() != 0) {
+			return 100.0f * history.getRankedDuoWins() / history.getRankedDuoPlayed();
+		} else {
+			return 0.0f;
+		}
 	}
 }

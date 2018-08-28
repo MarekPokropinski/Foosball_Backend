@@ -1,20 +1,19 @@
 package pl.ncdchot.foosball.modelDTO;
 
-import pl.ncdchot.foosball.database.model.UserHistory;
-
 public class HistoryDTO {
-	String nick;
-	private int normalGames;
-	private float normalWinRatio;
-	private int rankedSoloGames;
-	private float rankedSoloWinRatio;
-	private int rankedDuoGames;
-	private float rankedDuoWinRatio;
-	private int soloRankingPos;
-	private int duoRankingPos;
+	private String nick;
+	private String normalGames;
+	private String normalWinRatio;
+	private String rankedSoloGames;
+	private String rankedSoloWinRatio;
+	private String rankedDuoGames;
+	private String rankedDuoWinRatio;
+	private String soloRankingPos;
+	private String duoRankingPos;
 
-	public HistoryDTO(String nick, int normalGames, float normalWinRatio, int rankedSoloGames, float rankedSoloWinRatio,
-			int rankedDuoGames, float rankedDuoWinRatio, int soloRankingPos, int duoRankingPos) {
+	public HistoryDTO(String nick, String normalGames, String normalWinRatio, String rankedSoloGames,
+			String rankedSoloWinRatio, String rankedDuoGames, String rankedDuoWinRatio, String soloRankingPos,
+			String duoRankingPos) {
 		this.nick = nick;
 		this.normalGames = normalGames;
 		this.normalWinRatio = normalWinRatio;
@@ -26,12 +25,6 @@ public class HistoryDTO {
 		this.duoRankingPos = duoRankingPos;
 	}
 
-	public HistoryDTO(UserHistory history, String nick) {
-		this(nick, history.getNormalPlayed(), (float) history.getNormalWins() / history.getNormalPlayed(),
-				history.getRankedSoloPlayed(), (float) history.getRankedSoloWins() / history.getRankedSoloPlayed(),
-				history.getRankedDuoPlayed(), (float) history.getRankedDuoWins() / history.getRankedDuoPlayed(), 0, 0);
-	}
-
 	public String getNick() {
 		return nick;
 	}
@@ -40,67 +33,67 @@ public class HistoryDTO {
 		this.nick = nick;
 	}
 
-	public int getNormalGames() {
+	public String getNormalGames() {
 		return normalGames;
 	}
 
-	public void setNormalGames(int normalGames) {
+	public void setNormalGames(String normalGames) {
 		this.normalGames = normalGames;
 	}
 
-	public float getNormalWinRatio() {
+	public String getNormalWinRatio() {
 		return normalWinRatio;
 	}
 
-	public void setNormalWinRatio(float normalWinRatio) {
+	public void setNormalWinRatio(String normalWinRatio) {
 		this.normalWinRatio = normalWinRatio;
 	}
 
-	public int getRankedSoloGames() {
+	public String getRankedSoloGames() {
 		return rankedSoloGames;
 	}
 
-	public void setRankedSoloGames(int rankedSoloGames) {
+	public void setRankedSoloGames(String rankedSoloGames) {
 		this.rankedSoloGames = rankedSoloGames;
 	}
 
-	public float getRankedSoloWinRatio() {
+	public String getRankedSoloWinRatio() {
 		return rankedSoloWinRatio;
 	}
 
-	public void setRankedSoloWinRatio(float rankedSoloWinRatio) {
+	public void setRankedSoloWinRatio(String rankedSoloWinRatio) {
 		this.rankedSoloWinRatio = rankedSoloWinRatio;
 	}
 
-	public int getRankedDuoGames() {
+	public String getRankedDuoGames() {
 		return rankedDuoGames;
 	}
 
-	public void setRankedDuoGames(int rankedDuoGames) {
+	public void setRankedDuoGames(String rankedDuoGames) {
 		this.rankedDuoGames = rankedDuoGames;
 	}
 
-	public float getRankedDuoWinRatio() {
+	public String getRankedDuoWinRatio() {
 		return rankedDuoWinRatio;
 	}
 
-	public void setRankedDuoWinRatio(float rankedDuoWinRatio) {
+	public void setRankedDuoWinRatio(String rankedDuoWinRatio) {
 		this.rankedDuoWinRatio = rankedDuoWinRatio;
 	}
 
-	public int getSoloRankingPos() {
+	public String getSoloRankingPos() {
 		return soloRankingPos;
 	}
 
-	public void setSoloRankingPos(int soloRankingPos) {
+	public void setSoloRankingPos(String soloRankingPos) {
 		this.soloRankingPos = soloRankingPos;
 	}
 
-	public int getDuoRankingPos() {
+	public String getDuoRankingPos() {
 		return duoRankingPos;
 	}
 
-	public void setDuoRankingPos(int duoRankingPos) {
+	public void setDuoRankingPos(String duoRankingPos) {
 		this.duoRankingPos = duoRankingPos;
 	}
 }
