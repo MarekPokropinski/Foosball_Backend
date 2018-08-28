@@ -13,24 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class StatusController {
 
 	private static final Logger LOG = Logger.getLogger(StatusController.class);
-	private long lastEspResponseTime = System.currentTimeMillis();
-	private final int timeoutTime = 8000;
-
-	@PostMapping("/espStatus")
-	public ResponseEntity<String> recieveEspStatus(@RequestParam String status) {
-		LOG.info(String.format("Response from ESP: %s", status));
-		if (status.equals("OK")) {
-			lastEspResponseTime = System.currentTimeMillis();
-		}
-		return ResponseEntity.ok("Status Received");
-	}
 
 	@PostMapping("/serverStatus")
 	public ResponseEntity<Void> sendServerStatus() {
-		if (System.currentTimeMillis() - lastEspResponseTime < timeoutTime) {
 			return new ResponseEntity<>(HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
 	}
 }
