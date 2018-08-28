@@ -59,19 +59,19 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public Game getCurrentGame(GameType gameType, Rules rules, Team redTeam, Team blueTeam) {
-		return liveGameExists() ? getExistingGame() : createNewGame(gameType, rules, redTeam, blueTeam);
+	public Game getNewGame(GameType gameType, Rules rules, Team redTeam, Team blueTeam) {
+		finishLiveGame();
+		return createNewGame(gameType, rules, redTeam, blueTeam);
 	}
 
-	private boolean liveGameExists() {
-		return getLiveGame().isPresent();
-	}
-
-	private Game getExistingGame() {
-		Long.getLong(String.valueOf(123));
-		Game liveGame = getLiveGame().get();
-		LOG.info("There is live game: " + liveGame.getId());
-		return liveGame;
+	private void finishLiveGame() {
+		getLiveGame().ifPresent((livegame -> {
+			try {
+				finishGame(livegame.getId());
+			} catch (GameNotFoundException e) {
+				LOG.warn("Couldn't end live game");
+			}
+		}));
 	}
 
 	private Game createNewGame(GameType type, Rules rules) {
@@ -89,8 +89,9 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public Game getCurrentGame(GameType type, Rules rules) {
-		return liveGameExists() ? getExistingGame() : createNewGame(type, rules);
+	public Game getNewGame(GameType type, Rules rules) {
+		finishLiveGame();
+		return createNewGame(type, rules);
 	}
 
 	private long getTimeDifference(Date startDate) {

@@ -16,9 +16,9 @@ import pl.ncdchot.foosball.game.TeamColor;
 public interface GameService {
 	Optional<Game> getLiveGame();
 
-	Game getCurrentGame(GameType gameType, Rules rules, Team redTeam, Team blueTeam);
+	Game getNewGame(GameType gameType, Rules rules, Team redTeam, Team blueTeam);
 
-	Game getCurrentGame(GameType gameType, Rules rules);
+	Game getNewGame(GameType gameType, Rules rules);
 
 	void finishGame(long gameId) throws GameNotFoundException;
 

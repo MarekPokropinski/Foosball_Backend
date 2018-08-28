@@ -21,7 +21,7 @@ public class FreeGameServiceImpl extends GameServiceImpl implements FreeGameServ
 
 	@Override
 	public long startGame() {
-		Game game = getCurrentGame(GameType.FREE, rulesService.getRules(FREE_RULES));
+		Game game = getNewGame(GameType.FREE, rulesService.getRules(FREE_RULES));
 		try {
 			GameInfo info = getGameInfo(game.getId());
 			websocket.sendMessageToAllClients(info);
