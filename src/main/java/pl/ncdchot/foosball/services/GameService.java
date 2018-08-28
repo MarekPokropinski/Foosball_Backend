@@ -1,5 +1,6 @@
 package pl.ncdchot.foosball.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import pl.ncdchot.foosball.database.model.Game;
@@ -40,4 +41,6 @@ public interface GameService {
 	Statistics createNewStats();
 
 	void updateDuration(Game game);
+
+	List<GameSummary> getLastGames();
 }
