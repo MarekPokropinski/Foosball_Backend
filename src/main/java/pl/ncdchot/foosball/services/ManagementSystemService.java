@@ -14,7 +14,8 @@ public interface ManagementSystemService {
 
 	boolean isUserInExternalService(long externalId);
 
-    UserDTO getUserByCardID(Long userID) throws UserByCardIDNotExistException;
+	UserDTO getUserByCardID(String userID) throws UserByCardIDNotExistException;
 
-	UserDTO getUserByNickOrCardID(String textValue) throws UserByCardIDNotExistException, UserNotExistException, UserByNickNoExistException;
+	UserDTO getUserByNickOrCardID(String textValue)
+			throws UserByCardIDNotExistException, UserNotExistException, UserByNickNoExistException;
 }

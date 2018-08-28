@@ -60,8 +60,8 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 	}
 
 	@Override
-	public UserDTO getUserByCardID(Long cardID) throws UserByCardIDNotExistException {
-		String url = String.format("%sget/by-cardid/%d", USER_URL, cardID);
+	public UserDTO getUserByCardID(String cardID) throws UserByCardIDNotExistException {
+		String url = String.format("%sget/by-cardid/%s", USER_URL, cardID);
 		UserDTO user = restTemplate.getForObject(url, UserDTO.class);
 		if (user != null) {
 			return user;
@@ -75,7 +75,7 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 			throws UserByCardIDNotExistException, UserByNickNoExistException, UserNotExistException {
 
 		if (isCardID(textValue)) {
-			return getUserByCardID(Long.valueOf(textValue));
+			return getUserByCardID(textValue);
 		} else if (isNickName(textValue)) {
 			return getUserByNick(textValue);
 		} else
