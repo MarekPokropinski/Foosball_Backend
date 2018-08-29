@@ -25,6 +25,7 @@ import pl.ncdchot.foosball.game.GameWithHistorySummary;
 import pl.ncdchot.foosball.game.TeamColor;
 import pl.ncdchot.foosball.services.GameService;
 import pl.ncdchot.foosball.services.GoalService;
+import pl.ncdchot.foosball.services.ReplaysService;
 import pl.ncdchot.foosball.services.RulesService;
 import pl.ncdchot.foosball.services.StatisticsService;
 import pl.ncdchot.foosball.services.UserHistoryService;
@@ -52,6 +53,9 @@ public class GameServiceImpl implements GameService {
 
 	@Autowired
 	private UserHistoryService userHistoryService;
+	
+	@Autowired
+	private ReplaysService replaysService;
 
 	@Override
 	public Optional<Game> getLiveGame() {
@@ -119,11 +123,13 @@ public class GameServiceImpl implements GameService {
 		}
 	}
 
-	private void scoreGoal(Game game, TeamColor team) {
+	private Goal scoreGoal(Game game, TeamColor team) {
 		Statistics stats = game.getStats();
 		changeScore(stats, team, 1);
-		stats.getGoals().add(goalService.getNewGoal(team));
+		Goal goal = goalService.getNewGoal(team);
+		stats.getGoals().add(goal);
 		statsService.saveStats(stats);
+		return goal;
 	}
 
 	private void changeScore(Statistics stats, TeamColor team, int points) {
@@ -141,8 +147,10 @@ public class GameServiceImpl implements GameService {
 	public void goal(long gameId, TeamColor team) throws GameNotFoundException {
 		if (isLive(gameId) && rulesService.checkRules(getGame(gameId))) {
 			Game game = getGame(gameId);
-			scoreGoal(game, team);
+			Goal newGoal = scoreGoal(game, team);
 			GameInfo info = getGameInfo(gameId);
+			
+			replaysService.saveReplay(game, newGoal);;
 
 			if (!rulesService.checkRules(getGame(gameId))) {
 				info.setFinished(true);
