@@ -322,7 +322,7 @@ public class GameServiceImpl implements GameService {
 		Statistics stats = game.getStats();
 		GameHistoryDTO gameHistory = new GameHistoryDTO(stats.getRedScore(), stats.getBlueScore(),
 				(int) stats.getDuration().getSeconds(), stats.getRedSeries(), stats.getBlueSeries(), redNicks,
-				blueNicks, game.getStartDate());
+				blueNicks, game.getStartDate(), game.getType());
 		return gameHistory;
 	}
 

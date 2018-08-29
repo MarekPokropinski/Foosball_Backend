@@ -2,30 +2,34 @@ package pl.ncdchot.foosball.modelDTO;
 
 import java.util.Date;
 
+import pl.ncdchot.foosball.database.model.GameType;
+
 public class GameHistoryDTO {
 	private int redScore;
 	private int blueScore;
-	private int durationInSeconds;
+	private int gameDuration;
 	private int redLongestSeries;
 	private int blueLongestSeries;
 	private String[] redTeamNicks;
 	private String[] blueTeamNicks;
-	Date startDate;
+	Date dateStart;
+	GameType typeOfGame;
 
 	public GameHistoryDTO() {
 
 	}
 
 	public GameHistoryDTO(int redScore, int blueScore, int durationInSeconds, int redLongestSeries,
-			int blueLongestSeries, String[] redTeamNicks, String[] blueTeamNicks, Date startDate) {
+			int blueLongestSeries, String[] redTeamNicks, String[] blueTeamNicks, Date startDate, GameType typeOfGame) {
 		this.redScore = redScore;
 		this.blueScore = blueScore;
-		this.durationInSeconds = durationInSeconds;
+		this.gameDuration = durationInSeconds;
 		this.redLongestSeries = redLongestSeries;
 		this.blueLongestSeries = blueLongestSeries;
 		this.redTeamNicks = redTeamNicks;
 		this.blueTeamNicks = blueTeamNicks;
-		this.startDate = startDate;
+		this.dateStart = startDate;
+		this.typeOfGame = typeOfGame;
 	}
 
 	public int getRedScore() {
@@ -44,12 +48,12 @@ public class GameHistoryDTO {
 		this.blueScore = blueScore;
 	}
 
-	public int getDurationInSeconds() {
-		return durationInSeconds;
+	public int getGameDuration() {
+		return gameDuration;
 	}
 
-	public void setDurationInSeconds(int durationInSeconds) {
-		this.durationInSeconds = durationInSeconds;
+	public void setGameDuration(int durationInSeconds) {
+		this.gameDuration = durationInSeconds;
 	}
 
 	public int getRedLongestSeries() {
@@ -84,12 +88,19 @@ public class GameHistoryDTO {
 		this.blueTeamNicks = blueTeamNicks;
 	}
 
-	public Date getStartDate() {
-		return startDate;
+	public Date getDateStart() {
+		return dateStart;
 	}
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setDateStart(Date dateStart) {
+		this.dateStart = dateStart;
 	}
 
+	public GameType getTypeOfGame() {
+		return typeOfGame;
+	}
+
+	public void setTypeOfGame(GameType typeOfGame) {
+		this.typeOfGame = typeOfGame;
+	}
 }
