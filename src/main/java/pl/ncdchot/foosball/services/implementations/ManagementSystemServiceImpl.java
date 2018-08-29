@@ -45,18 +45,28 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 
 	@Override
 	public UserDTO getExternalUserByExternalId(long externalId) throws UserNotExistException {
-		UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
-		if (user != null) {
-			return user;
-		} else {
+		try {
+			UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+			if (user != null) {
+				return user;
+			} else {
+				throw new UserNotExistException(externalId);
+			}
+		} catch (RestClientException e) {
+			LOG.warn("Error with connection to external service");
 			throw new UserNotExistException(externalId);
 		}
 	}
 
 	@Override
 	public boolean isUserInExternalService(long externalId) {
-		UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
-		return user != null;
+		try {
+			UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+			return user != null;
+		} catch (RestClientException e) {
+			LOG.warn("Error with connection to external service");
+			return false;
+		}
 	}
 
 	@Override
@@ -94,7 +104,13 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 
 	private UserDTO getUserByNick(String nickName) throws UserByNickNoExistException {
 		String url = String.format("%s/get/by-nick/%s", USER_URL, nickName);
-		UserDTO user = restTemplate.getForObject(url, UserDTO.class);
+		UserDTO user;
+		try {
+			user = restTemplate.getForObject(url, UserDTO.class);
+		} catch (RestClientException e) {
+			LOG.warn("Error with connection to external service");
+			throw new UserByNickNoExistException(nickName);
+		}
 		if (user == null) {
 			throw new UserByNickNoExistException(nickName);
 		}

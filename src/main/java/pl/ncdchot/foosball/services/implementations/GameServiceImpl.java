@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,17 @@ import pl.ncdchot.foosball.database.model.Goal;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.database.model.Statistics;
 import pl.ncdchot.foosball.database.model.Team;
+import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.database.repository.GameRepository;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
+import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
-import pl.ncdchot.foosball.game.GameWithHistorySummary;
 import pl.ncdchot.foosball.game.TeamColor;
+import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
 import pl.ncdchot.foosball.services.GameService;
 import pl.ncdchot.foosball.services.GoalService;
+import pl.ncdchot.foosball.services.ManagementSystemService;
 import pl.ncdchot.foosball.services.RulesService;
 import pl.ncdchot.foosball.services.StatisticsService;
 import pl.ncdchot.foosball.services.UserHistoryService;
@@ -52,6 +54,9 @@ public class GameServiceImpl implements GameService {
 
 	@Autowired
 	private UserHistoryService userHistoryService;
+
+	@Autowired
+	private ManagementSystemService managementSystemService;
 
 	@Override
 	public Optional<Game> getLiveGame() {
@@ -295,24 +300,40 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public List<GameSummary> getLastGames() {
+	public List<GameHistoryDTO> getLastGames() {
 		List<Game> games = gameRepository.findTop10ByOrderByStartDate();
-		List<GameSummary> lastGames = new ArrayList<>();
+		List<GameHistoryDTO> lastGames = new ArrayList<>();
 		for (Game game : games) {
-			Statistics stats = game.getStats();
-			GameSummary summary = new GameSummary(stats.getRedScore(), stats.getBlueScore(),
-					stats.getDuration().toMillis(), stats.getRedSeries(), stats.getBlueSeries());
-			if (game.getType() == GameType.FREE) {
-				lastGames.add(summary);
-			} else {
-				List<Long> redTeamIds = game.getRedTeam().getUsers().stream().map(x -> x.getId())
-						.collect(Collectors.toList());
-				List<Long> blueTeamIds = game.getBlueTeam().getUsers().stream().map(x -> x.getId())
-						.collect(Collectors.toList());
-				lastGames.add(new GameWithHistorySummary(summary, redTeamIds, blueTeamIds));
-			}
+			lastGames.add(createGameHistoryDTO(game));
 		}
 		return lastGames;
+	}
+
+	private GameHistoryDTO createGameHistoryDTO(Game game) {
+		String[] redNicks;
+		String[] blueNicks;
+		if (game.getType() == GameType.FREE) {
+			redNicks = new String[0];
+			blueNicks = new String[0];
+		} else {
+			redNicks = getUsersNicks(game.getRedTeam().getUsers());
+			blueNicks = getUsersNicks(game.getBlueTeam().getUsers());
+		}
+		Statistics stats = game.getStats();
+		GameHistoryDTO gameHistory = new GameHistoryDTO(stats.getRedScore(), stats.getBlueScore(),
+				(int) stats.getDuration().getSeconds(), stats.getRedSeries(), stats.getBlueSeries(), redNicks,
+				blueNicks, game.getStartDate());
+		return gameHistory;
+	}
+
+	private String[] getUsersNicks(List<User> users) {
+		return users.stream().map(user -> {
+			try {
+				return managementSystemService.getExternalUserByExternalId(user.getExternalID()).getNick();
+			} catch (UserNotExistException e) {
+				return "Deleted user";
+			}
+		}).toArray(String[]::new);
 	}
 
 }
