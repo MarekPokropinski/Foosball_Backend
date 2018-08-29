@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import pl.ncdchot.foosball.game.GameSummary;
+import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
 import pl.ncdchot.foosball.modelDTO.HistoryDTO;
 import pl.ncdchot.foosball.services.GameService;
 import pl.ncdchot.foosball.services.UserService;
@@ -30,8 +30,8 @@ public class HistoryController {
 	}
 
 	@GetMapping("/history")
-	public ResponseEntity<List<GameSummary>> getLastGames() {
-		List<GameSummary> lastGames = gameService.getLastGames();
+	public ResponseEntity<List<GameHistoryDTO>> getLastGames() {
+		List<GameHistoryDTO> lastGames = gameService.getLastGames();
 		return new ResponseEntity<>(lastGames, HttpStatus.OK);
 	}
 }
