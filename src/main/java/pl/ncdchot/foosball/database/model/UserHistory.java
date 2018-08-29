@@ -1,12 +1,9 @@
 package pl.ncdchot.foosball.database.model;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 
 @Entity
 public class UserHistory extends BaseModel {
-	@OneToOne
-	private User user;
 	private int rankedSoloWins;
 	private int rankedSoloPlayed;
 	private int rankedDuoWins;
@@ -17,18 +14,6 @@ public class UserHistory extends BaseModel {
 	private double teamEloPoints;
 
 	public UserHistory() {
-	}
-
-	public UserHistory(User user) {
-		this.user = user;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public int getRankedSoloWins() {
