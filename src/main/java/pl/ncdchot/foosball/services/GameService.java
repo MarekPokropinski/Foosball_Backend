@@ -12,6 +12,7 @@ import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.game.GameInfo;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
+import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
 
 public interface GameService {
 	Optional<Game> getLiveGame();
@@ -42,5 +43,5 @@ public interface GameService {
 
 	void updateDuration(Game game);
 
-	List<GameSummary> getLastGames();
+	List<GameHistoryDTO> getLastGames();
 }
