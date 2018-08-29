@@ -45,7 +45,12 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 
 	@Override
 	public UserDTO getExternalUserByExternalId(long externalId) throws UserNotExistException {
-		UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+		UserDTO user;
+		try {
+			user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+		} catch (RestClientException e) {
+			throw new UserNotExistException(externalId);
+		}
 		if (user != null) {
 			return user;
 		} else {
