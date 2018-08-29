@@ -335,5 +335,4 @@ public class GameServiceImpl implements GameService {
 			}
 		}).toArray(String[]::new);
 	}
-
 }

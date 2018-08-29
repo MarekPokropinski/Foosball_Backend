@@ -9,24 +9,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
+import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.modelDTO.HistoryDTO;
 import pl.ncdchot.foosball.services.GameService;
-import pl.ncdchot.foosball.services.UserHistoryService;
+import pl.ncdchot.foosball.services.UserService;
 
 @RestController
 @RequestMapping("/history")
 public class HistoryController {
-
 	@Autowired
-	private UserHistoryService userHistoryService;
+	private UserService userService;
 
 	@Autowired
 	private GameService gameService;
 
 	@GetMapping("/leaderboards")
 	public ResponseEntity<List<HistoryDTO>> getLeaderboards() {
-		List<HistoryDTO> historyList = userHistoryService.getAllHistory();
+		List<HistoryDTO> historyList = userService.getAllHistory();
 		return new ResponseEntity<>(historyList, HttpStatus.OK);
 	}
 
