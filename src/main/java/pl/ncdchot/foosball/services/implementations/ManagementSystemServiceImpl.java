@@ -4,9 +4,11 @@ import java.util.Optional;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import pl.ncdchot.foosball.exceptions.TeamNoExistException;
 import pl.ncdchot.foosball.exceptions.UserByCardIDNotExistException;
 import pl.ncdchot.foosball.exceptions.UserByNickNoExistException;
@@ -16,12 +18,14 @@ import pl.ncdchot.foosball.services.ManagementSystemService;
 
 @Service
 public class ManagementSystemServiceImpl implements ManagementSystemService {
-    private static final Logger LOG = Logger.getLogger(ManagementSystemServiceImpl.class);
+	private static final Logger LOG = Logger.getLogger(ManagementSystemServiceImpl.class);
 
-    private static final String USER_URL = "http://hotdev:8080/usrmgmt/user";
-    private static final String TEAM_URL = "http://hotdev:8080/usrmgmt/team";
+	@Value("${userManagement.user.url}")
+	private static final String USER_URL = "http://hotdev:8080/usrmgmt/user";
+	@Value("${userManagement.team.url}")
+	private static final String TEAM_URL = "http://hotdev:8080/usrmgmt/team";
 
-    private RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 
 	@Autowired
 	ManagementSystemServiceImpl(RestTemplate restTemplate) {
@@ -120,14 +124,14 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 		return user;
 	}
 
-    @Override
-    public String getTournamentTeamID(long[] teamUsersID) throws TeamNoExistException {
-        String url = String.format("%s/get-by-users", TEAM_URL);
-        String teamID = restTemplate.postForObject(url, teamUsersID, String.class);
-        if (teamID == null) {
-            throw new TeamNoExistException();
-        }
-        return teamID;
-    }
+	@Override
+	public String getTournamentTeamID(long[] teamUsersID) throws TeamNoExistException {
+		String url = String.format("%s/get-by-users", TEAM_URL);
+		String teamID = restTemplate.postForObject(url, teamUsersID, String.class);
+		if (teamID == null) {
+			throw new TeamNoExistException();
+		}
+		return teamID;
+	}
 
 }

@@ -29,6 +29,7 @@ import pl.ncdchot.foosball.services.GoalService;
 import pl.ncdchot.foosball.services.ManagementSystemService;
 import pl.ncdchot.foosball.services.ReplaysService;
 import pl.ncdchot.foosball.services.RulesService;
+import pl.ncdchot.foosball.services.SensorsService;
 import pl.ncdchot.foosball.services.StatisticsService;
 import pl.ncdchot.foosball.services.UserHistoryService;
 import pl.ncdchot.foosball.webSockets.SocketHandler;
@@ -62,6 +63,9 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	private ManagementSystemService managementSystemService;
 
+	@Autowired
+	private SensorsService sensorsService;
+
 	@Override
 	public Optional<Game> getLiveGame() {
 		return gameRepository.findByEndDate(null);
@@ -83,10 +87,15 @@ public class GameServiceImpl implements GameService {
 		}));
 	}
 
+	private void onGameStart() {
+		sensorsService.changeStatus(true);
+	}
+
 	private Game createNewGame(GameType type, Rules rules) {
 		Statistics stats = statsService.createEmpty();
 		Game game = new Game(type, rules, stats);
 		gameRepository.save(game);
+		onGameStart();
 		return game;
 	}
 
@@ -94,6 +103,7 @@ public class GameServiceImpl implements GameService {
 		Statistics stats = statsService.createEmpty();
 		Game game = new Game(gameType, rules, stats, redTeam, blueTeam);
 		gameRepository.save(game);
+		onGameStart();
 		return game;
 	}
 
@@ -126,6 +136,7 @@ public class GameServiceImpl implements GameService {
 		} else {
 			throw new GameNotFoundException();
 		}
+		sensorsService.changeStatus(false);
 	}
 
 	private Goal scoreGoal(Game game, TeamColor team) {
@@ -156,7 +167,6 @@ public class GameServiceImpl implements GameService {
 			GameInfo info = getGameInfo(gameId);
 
 			replaysService.saveReplay(game, newGoal);
-
 
 			if (!rulesService.checkRules(game)) {
 				info.setFinished(true);
