@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 public class Team extends BaseModel {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<User> users;
+	private long externalID;
 
 	public Team() {
 	}
@@ -29,5 +30,13 @@ public class Team extends BaseModel {
 
 	public void setUsers(List<User> users) {
 		this.users = users;
+	}
+
+	public long getExternalID() {
+		return externalID;
+	}
+
+	public void setExternalID(long externalID) {
+		this.externalID = externalID;
 	}
 }

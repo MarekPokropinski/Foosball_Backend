@@ -156,9 +156,9 @@ public class GameServiceImpl implements GameService {
 			GameInfo info = getGameInfo(gameId);
 
 			replaysService.saveReplay(game, newGoal);
-			;
 
-			if (!rulesService.checkRules(getGame(gameId))) {
+
+			if (!rulesService.checkRules(game)) {
 				info.setFinished(true);
 				finishGame(gameId);
 			} else {

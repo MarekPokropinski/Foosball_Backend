@@ -1,6 +1,7 @@
 package pl.ncdchot.foosball.services.implementations;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,4 +71,8 @@ public class RulesServiceImpl implements RulesService {
 		return rulesRepository.existsByScoreLimitAndTimeLimit(rules.getScoreLimit(), rules.getTimeLimit());
 	}
 
+	@Override
+	public List<Rules> getAll() {
+		return rulesRepository.findAll();
+	}
 }
