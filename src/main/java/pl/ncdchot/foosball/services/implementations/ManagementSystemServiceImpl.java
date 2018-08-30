@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
+import pl.ncdchot.foosball.exceptions.TeamNoExistException;
 import pl.ncdchot.foosball.exceptions.UserByCardIDNotExistException;
 import pl.ncdchot.foosball.exceptions.UserByNickNoExistException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
@@ -16,9 +16,12 @@ import pl.ncdchot.foosball.services.ManagementSystemService;
 
 @Service
 public class ManagementSystemServiceImpl implements ManagementSystemService {
-	private static final String USER_URL = "http://hotdev:8080/usrmgmt/user/";
-	private static final Logger LOG = Logger.getLogger(ManagementSystemServiceImpl.class);
-	private RestTemplate restTemplate;
+    private static final Logger LOG = Logger.getLogger(ManagementSystemServiceImpl.class);
+
+    private static final String USER_URL = "http://hotdev:8080/usrmgmt/user";
+    private static final String TEAM_URL = "http://hotdev:8080/usrmgmt/team";
+
+    private RestTemplate restTemplate;
 
 	@Autowired
 	ManagementSystemServiceImpl(RestTemplate restTemplate) {
@@ -29,7 +32,7 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 	public Optional<Long> getUserIdByNick(String nick) {
 		UserDTO[] users;
 		try {
-			users = restTemplate.getForObject(USER_URL + "all", UserDTO[].class);
+			users = restTemplate.getForObject(USER_URL + "/all", UserDTO[].class);
 		} catch (RestClientException e) {
 			LOG.warn("Failed to get users from user management");
 			return Optional.empty();
@@ -46,7 +49,7 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 	@Override
 	public UserDTO getExternalUserByExternalId(long externalId) throws UserNotExistException {
 		try {
-			UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+			UserDTO user = restTemplate.getForObject(String.format("%s/get/%s", USER_URL, externalId), UserDTO.class);
 			if (user != null) {
 				return user;
 			} else {
@@ -61,7 +64,7 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 	@Override
 	public boolean isUserInExternalService(long externalId) {
 		try {
-			UserDTO user = restTemplate.getForObject(String.format("%sget/%s", USER_URL, externalId), UserDTO.class);
+			UserDTO user = restTemplate.getForObject(String.format("%s/get/%s", USER_URL, externalId), UserDTO.class);
 			return user != null;
 		} catch (RestClientException e) {
 			LOG.warn("Error with connection to external service");
@@ -71,7 +74,7 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 
 	@Override
 	public UserDTO getUserByCardID(String cardID) throws UserByCardIDNotExistException {
-		String url = String.format("%sget/by-cardid/%s", USER_URL, cardID);
+		String url = String.format("%s/get/by-cardid/%s", USER_URL, cardID);
 		UserDTO user = restTemplate.getForObject(url, UserDTO.class);
 		if (user != null) {
 			return user;
@@ -116,4 +119,15 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 		}
 		return user;
 	}
+
+    @Override
+    public String getTournamentTeamID(long[] teamUsersID) throws TeamNoExistException {
+        String url = String.format("%s/get-by-users", TEAM_URL);
+        String teamID = restTemplate.postForObject(url, teamUsersID, String.class);
+        if (teamID == null) {
+            throw new TeamNoExistException();
+        }
+        return teamID;
+    }
+
 }

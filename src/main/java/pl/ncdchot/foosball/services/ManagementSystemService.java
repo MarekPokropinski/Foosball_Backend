@@ -2,6 +2,7 @@ package pl.ncdchot.foosball.services;
 
 import java.util.Optional;
 
+import pl.ncdchot.foosball.exceptions.TeamNoExistException;
 import pl.ncdchot.foosball.exceptions.UserByCardIDNotExistException;
 import pl.ncdchot.foosball.exceptions.UserByNickNoExistException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
@@ -18,4 +19,6 @@ public interface ManagementSystemService {
 
 	UserDTO getUserByNickOrCardID(String textValue)
 			throws UserByCardIDNotExistException, UserNotExistException, UserByNickNoExistException;
+
+    String getTournamentTeamID(long[] redTeam) throws TeamNoExistException;
 }
