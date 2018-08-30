@@ -7,12 +7,11 @@ import pl.ncdchot.foosball.database.model.Statistics;
 import pl.ncdchot.foosball.database.repository.StatsRepository;
 import pl.ncdchot.foosball.services.StatisticsService;
 
-
 @Service
 public class StatisticsServiceImpl implements StatisticsService {
 
 	@Autowired
-	StatsRepository statsRepository;
+	private StatsRepository statsRepository;
 
 	@Override
 	public Statistics createEmpty() {
