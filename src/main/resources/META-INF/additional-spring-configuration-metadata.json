@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "sensors.url",
+    "type": "java.lang.String",
+    "description": "A description for 'sensors.url'"
+  },
+  {
+    "name": "tournament.url",
+    "type": "java.lang.String",
+    "description": "Address of tournament system endpoint (no / at end)"
+  },
+  {
+    "name": "userManagement.user.url",
+    "type": "java.lang.String",
+    "description": "Address of user management endpoint (no / at end)"
+  },
+  {
+    "name": "userManagement.team.url",
+    "type": "java.lang.String",
+    "description": "Address of team management endpoint (no / at end)"
+  }
+]}

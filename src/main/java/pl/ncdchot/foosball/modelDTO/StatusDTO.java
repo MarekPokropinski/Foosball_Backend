@@ -4,7 +4,6 @@ public class StatusDTO {
 	private String status;
 
 	public StatusDTO(String status) {
-		super();
 		this.status = status;
 	}
 
