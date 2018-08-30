@@ -313,7 +313,9 @@ public class GameServiceImpl implements GameService {
 		List<Game> games = gameRepository.findTop10ByOrderByStartDate();
 		List<GameHistoryDTO> lastGames = new ArrayList<>();
 		for (Game game : games) {
-			lastGames.add(createGameHistoryDTO(game));
+			if (game.getEndDate() != null) {
+				lastGames.add(createGameHistoryDTO(game));
+			}
 		}
 		return lastGames;
 	}
