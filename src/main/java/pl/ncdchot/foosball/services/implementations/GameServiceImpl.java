@@ -88,7 +88,7 @@ public class GameServiceImpl implements GameService {
 	}
 
 	private void onGameStart() {
-		sensorsService.turnOn(true);
+		sensorsService.changeStatus(true);
 	}
 
 	private Game createNewGame(GameType type, Rules rules) {
@@ -136,7 +136,7 @@ public class GameServiceImpl implements GameService {
 		} else {
 			throw new GameNotFoundException();
 		}
-		sensorsService.turnOn(false);
+		sensorsService.changeStatus(false);
 	}
 
 	private Goal scoreGoal(Game game, TeamColor team) {
