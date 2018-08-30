@@ -21,7 +21,7 @@ public class TournamentSystemServiceImpl implements TournamentSystemService {
 
 	@Override
 	public TournamentDTO findGameInTournament(PrepareToStartGameInTournamentDTO prepareToStartGameInTournamentDTO) {
-		String url = TOURNAMENT_URL + "/check";
+		String url = String.format("%s/check",TOURNAMENT_URL);
 		TournamentDTO[] list = restTemplate.postForObject(url, prepareToStartGameInTournamentDTO,
 				TournamentDTO[].class);
 		return list[FIRST_TOURNAMENT];
@@ -29,7 +29,7 @@ public class TournamentSystemServiceImpl implements TournamentSystemService {
 
 	@Override
 	public void sandResultToTournament(FinishTournamentGameDTO finishTournamentGameDTO) {
-		String url = TOURNAMENT_URL + "/finish";
+		String url = String.format("%s/finish",TOURNAMENT_URL);
 		restTemplate.postForLocation(url, finishTournamentGameDTO);
 	}
 
