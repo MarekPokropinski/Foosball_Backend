@@ -15,7 +15,7 @@ public class RankedGameServiceImpl extends GameWithHistoryServiceImpl {
     public static final int RANKED_GOALS_LIMIT = 10;
     public static final int RANKED_TIME_IN_SEC_LIMIT = 600;
 
-    private static final Rules RANKED_GAME_RULES = new Rules(RANKED_GOALS_LIMIT,
+    public static final Rules RANKED_GAME_RULES = new Rules(RANKED_GOALS_LIMIT,
             Duration.ofSeconds(RANKED_TIME_IN_SEC_LIMIT));
 
     @Override

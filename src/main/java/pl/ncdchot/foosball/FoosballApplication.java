@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableAsync
 public class FoosballApplication extends SpringBootServletInitializer{
-//		implements WebApplicationInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -18,9 +17,4 @@ public class FoosballApplication extends SpringBootServletInitializer{
 	public static void main(String[] args) {
 		SpringApplication.run(FoosballApplication.class, args);
 	}
-
-
-//	private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
-//		return builder.sources(FoosballApplication.class).bannerMode(Banner.Mode.OFF);
-//	}
 }
