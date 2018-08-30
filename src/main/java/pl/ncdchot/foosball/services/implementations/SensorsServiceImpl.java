@@ -14,20 +14,19 @@ import pl.ncdchot.foosball.services.SensorsService;
 public class SensorsServiceImpl implements SensorsService {
 
 	private static final Logger LOG = Logger.getLogger(SensorsServiceImpl.class);
+	private static final String SEND_ENDPOINT = "/send";
 	@Value("${sensors.url}")
 	private String SENSORS_URL;
 
-	private static final String SEND_ENDPOINT = "/send";
-
 	@Autowired
-	RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 
 	@Override
-	public void turnOn(boolean isOn) {
-		String status = isOn ? "on" : "off";
+	public void changeStatus(boolean status) {
+		String statusText = status ? "on" : "off";
 		try {
 			System.out.println(SENSORS_URL);
-			restTemplate.postForObject(SENSORS_URL, new StatusDTO(status), StatusDTO.class, SEND_ENDPOINT);
+			restTemplate.postForObject(SENSORS_URL, new StatusDTO(statusText), StatusDTO.class, SEND_ENDPOINT);
 		} catch (RestClientException e) {
 			LOG.warn("no connection with sensors");
 		}
