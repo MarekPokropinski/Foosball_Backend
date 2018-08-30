@@ -310,7 +310,7 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public List<GameHistoryDTO> getLastGames() {
-		List<Game> games = gameRepository.findTop10ByOrderByStartDate();
+		List<Game> games = gameRepository.findTop10ByOrderByStartDateDesc();
 		List<GameHistoryDTO> lastGames = new ArrayList<>();
 		for (Game game : games) {
 			lastGames.add(createGameHistoryDTO(game));

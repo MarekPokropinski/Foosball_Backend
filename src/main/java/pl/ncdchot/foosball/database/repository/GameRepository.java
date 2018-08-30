@@ -11,5 +11,5 @@ import pl.ncdchot.foosball.database.model.Game;
 public interface GameRepository extends CrudRepository<Game, Long> {
 	Optional<Game> findByEndDate(Date date);
 
-	List<Game> findTop10ByOrderByStartDate();
+	List<Game> findTop10ByOrderByStartDateDesc();
 }
