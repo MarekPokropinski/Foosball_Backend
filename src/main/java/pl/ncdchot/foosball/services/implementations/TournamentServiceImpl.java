@@ -26,17 +26,13 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
 
     @Autowired
     private TournamentSystemServiceImpl tournamentSystemServiceImpl;
-
     @Autowired
     private ManagementSystemService managementSystemService;
     @Autowired
     private GameInTournamentService gameInTournamentService;
 
     @Override
-    public long startGame(long[] redTeamUsers,
-                          long[] blueTeamUsers,
-                          Rules rules) throws UserNotExistException, TeamNoExistException, GameNotFoundException {
-
+    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExistException, TeamNoExistException, GameNotFoundException {
         TournamentDTO tournamentDTO = getTournamentGame(redTeamUsers, blueTeamUsers);
         long gameID = startFoosballGame(redTeamUsers, blueTeamUsers);
         Game game = getGame(gameID);
@@ -55,8 +51,8 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
     }
 
     private void createTournamentGame(TournamentDTO tournamentDTO, Game game) {
-        game.getBlueTeam().setExternalID(Long.valueOf(tournamentDTO.getIdOfFirstPlayer()));
-        game.getRedTeam().setExternalID(Long.valueOf(tournamentDTO.getIdOfSecondPlayer()));
+        game.getBlueTeam().setExternalID(Long.valueOf(tournamentDTO.getIdOfSecondPlayer()));
+        game.getRedTeam().setExternalID(Long.valueOf(tournamentDTO.getIdOfFirstPlayer()));
 
         GameInTournament gameInTournament = new GameInTournament(game, tournamentDTO.getId());
         gameInTournamentService.save(gameInTournament);
@@ -99,12 +95,11 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
 
     private String getWinner(Game game) throws GameNotFoundException {
         long winnerID;
-        //TODO : to możę nie zadziałać
         GameSummary gameSummary = getSummary(game.getId());
         if (gameSummary.getBlueScore() > gameSummary.getRedScore()) {
-            winnerID=  game.getBlueTeam().getExternalID();
-        } else if (gameSummary.getBlueScore() < gameSummary.getRedScore()){
-            winnerID =  game.getRedTeam().getExternalID();
+            winnerID = game.getBlueTeam().getExternalID();
+        } else if (gameSummary.getBlueScore() < gameSummary.getRedScore()) {
+            winnerID = game.getRedTeam().getExternalID();
         } else {
             winnerID = 0;
         }
