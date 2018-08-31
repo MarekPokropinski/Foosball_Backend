@@ -6,6 +6,7 @@ import java.util.Optional;
 import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.database.model.UserHistory;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
+import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
 import pl.ncdchot.foosball.modelDTO.HistoryDTO;
 
 public interface UserService {
@@ -16,4 +17,6 @@ public interface UserService {
 	List<HistoryDTO> getAllHistory();
 
 	User getUserByHistory(UserHistory userHistory);
+
+	Optional<HistoryDTO> getUserStats(String userNick);
 }

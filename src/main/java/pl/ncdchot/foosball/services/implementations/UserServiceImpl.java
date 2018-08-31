@@ -8,11 +8,14 @@ import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pl.ncdchot.foosball.database.model.Game;
 import pl.ncdchot.foosball.database.model.User;
 import pl.ncdchot.foosball.database.model.UserHistory;
 import pl.ncdchot.foosball.database.repository.UserRepository;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
+import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
 import pl.ncdchot.foosball.modelDTO.HistoryDTO;
+import pl.ncdchot.foosball.modelDTO.UserDTO;
 import pl.ncdchot.foosball.services.ManagementSystemService;
 import pl.ncdchot.foosball.services.UserHistoryService;
 import pl.ncdchot.foosball.services.UserService;
@@ -53,10 +56,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<HistoryDTO> getAllHistory() {
-		// Iterable<UserHistory> allHistoriesIterable = userHistoryRepository.findAll();
 		Iterable<User> allUsers = userRepository.findAll();
-		// List<UserHistory> allHistories = Lists.newArrayList(allHistoriesIterable);
-
 		List<HistoryDTO> histories = new ArrayList<>();
 		List<UserHistory> userHistories = new ArrayList<>();
 		for (User user : allUsers) {
@@ -87,6 +87,17 @@ public class UserServiceImpl implements UserService {
 			histories.get(i).setDuoRankingPos(String.valueOf(duoRankingPos));
 		}
 		return histories;
+	}
+	
+	@Override
+	public Optional<HistoryDTO> getUserStats(String userNick) {
+		List<HistoryDTO> histories = getAllHistory();
+		for(HistoryDTO history : histories) {
+			if(history.getNick().equalsIgnoreCase(userNick)) {
+				return Optional.of(history);
+			}
+		}
+		return Optional.empty();
 	}
 
 	private HistoryDTO getHistoryDTO(UserHistory history, String nick) {
