@@ -10,7 +10,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import pl.ncdchot.foosball.exceptions.TeamNoExistException;
-import pl.ncdchot.foosball.exceptions.TeamNoExistException;
 import pl.ncdchot.foosball.exceptions.UserByCardIDNotExistException;
 import pl.ncdchot.foosball.exceptions.UserByNickNoExistException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
@@ -125,14 +124,14 @@ public class ManagementSystemServiceImpl implements ManagementSystemService {
 		return user;
 	}
 
-    @Override
-    public String getTournamentTeamID(long[] teamUsersID) throws TeamNoExistException {
-        String url = String.format("%s/get-by-users", TEAM_URL);
-        String teamID = restTemplate.postForObject(url, teamUsersID, String.class);
-        if (teamID == null) {
-            throw new TeamNoExistException();
-        }
-        return teamID;
-    }
+	@Override
+	public String getTournamentTeamID(long[] teamUsersID) throws TeamNoExistException {
+		String url = String.format("%s/get-by-users", TEAM_URL);
+		String teamID = restTemplate.postForObject(url, teamUsersID, String.class);
+		if (teamID == null) {
+			throw new TeamNoExistException();
+		}
+		return teamID;
+	}
 
 }
