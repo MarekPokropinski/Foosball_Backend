@@ -2,15 +2,15 @@ package pl.ncdchot.foosball.modelDTO;
 
 import java.util.Objects;
 
-public class PrepareToStartGameInTournamentDTO {
+public class CheckTournamentDTO {
     private String gameType;
     private String idOfFirstPlayer;
     private String idOfSecondPlayer;
 
-    public PrepareToStartGameInTournamentDTO() {
+    public CheckTournamentDTO() {
     }
 
-    public PrepareToStartGameInTournamentDTO(String gameType, String idOfFirstPlayer, String idOfSecondPlayer) {
+    public CheckTournamentDTO(String gameType, String idOfFirstPlayer, String idOfSecondPlayer) {
         this.gameType = gameType;
         this.idOfFirstPlayer = idOfFirstPlayer;
         this.idOfSecondPlayer = idOfSecondPlayer;
@@ -44,7 +44,7 @@ public class PrepareToStartGameInTournamentDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PrepareToStartGameInTournamentDTO that = (PrepareToStartGameInTournamentDTO) o;
+        CheckTournamentDTO that = (CheckTournamentDTO) o;
         return Objects.equals(gameType, that.gameType) &&
                 Objects.equals(idOfFirstPlayer, that.idOfFirstPlayer) &&
                 Objects.equals(idOfSecondPlayer, that.idOfSecondPlayer);
