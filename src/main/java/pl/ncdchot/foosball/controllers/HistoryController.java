@@ -1,12 +1,14 @@
 package pl.ncdchot.foosball.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import pl.ncdchot.foosball.modelDTO.GameHistoryDTO;
@@ -33,5 +35,13 @@ public class HistoryController {
 	public ResponseEntity<List<GameHistoryDTO>> getLastGames() {
 		List<GameHistoryDTO> lastGames = gameService.getLastGames();
 		return new ResponseEntity<>(lastGames, HttpStatus.OK);
+	}
+	@GetMapping("/byUser")
+	public ResponseEntity<HistoryDTO> getUserStats(@RequestParam String userNick) {
+		Optional<HistoryDTO> userStats = userService.getUserStats(userNick);
+		if(userStats.isPresent()) {
+			return new ResponseEntity<>(userStats.get(), HttpStatus.OK);
+		}			
+		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 }
