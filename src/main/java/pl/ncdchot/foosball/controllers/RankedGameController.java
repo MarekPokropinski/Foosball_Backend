@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.exceptions.TeamNoExistException;
+import pl.ncdchot.foosball.exceptions.TournamentGameDontExistsException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
@@ -29,7 +30,7 @@ public class RankedGameController {
     @GetMapping("/start")
     public ResponseEntity<String> startGame(
             @RequestParam long[] redTeamUsersID,
-            @RequestParam long[] blueTeamUsersID) throws TeamNoExistException, GameNotFoundException {
+            @RequestParam long[] blueTeamUsersID) throws TeamNoExistException, GameNotFoundException, TournamentGameDontExistsException {
 
 
         if (!isGameCorrect(redTeamUsersID, blueTeamUsersID)) {

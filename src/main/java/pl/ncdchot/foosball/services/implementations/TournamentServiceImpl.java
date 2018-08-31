@@ -9,6 +9,7 @@ import pl.ncdchot.foosball.database.model.GameType;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.exceptions.TeamNoExistException;
+import pl.ncdchot.foosball.exceptions.TournamentGameDontExistsException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.modelDTO.FinishTournamentGameDTO;
@@ -33,7 +34,7 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
     private GameInTournamentService gameInTournamentService;
 
     @Override
-    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExistException, TeamNoExistException, GameNotFoundException {
+    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExistException, TeamNoExistException, GameNotFoundException, TournamentGameDontExistsException {
         GameTournamentDTO gameTournamentDTO = getTournamentGame(redTeamUsers, blueTeamUsers);
         long gameID = startFoosballGame(redTeamUsers, blueTeamUsers);
         Game game = getGame(gameID);
@@ -42,7 +43,7 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
         return gameID;
     }
 
-    private GameTournamentDTO getTournamentGame(long[] redTeamUsers, long[] blueTeamUsers) throws TeamNoExistException {
+    private GameTournamentDTO getTournamentGame(long[] redTeamUsers, long[] blueTeamUsers) throws TeamNoExistException, TournamentGameDontExistsException {
         checkTournamentDTO = createTournamentGame(redTeamUsers, blueTeamUsers);
         return tournamentSystemServiceImpl.findGameInTournament(checkTournamentDTO);
     }
