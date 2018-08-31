@@ -14,7 +14,6 @@ import pl.ncdchot.foosball.services.SensorsService;
 public class SensorsServiceImpl implements SensorsService {
 
 	private static final Logger LOG = Logger.getLogger(SensorsServiceImpl.class);
-	private static final String SEND_ENDPOINT = "/send";
 	@Value("${sensors.url}")
 	private String SENSORS_URL;
 
@@ -26,10 +25,9 @@ public class SensorsServiceImpl implements SensorsService {
 		String statusText = status ? "on" : "off";
 		try {
 			System.out.println(SENSORS_URL);
-			restTemplate.postForObject(SENSORS_URL, new StatusDTO(statusText), StatusDTO.class, SEND_ENDPOINT);
+			restTemplate.postForObject(SENSORS_URL, new StatusDTO(statusText), StatusDTO.class);
 		} catch (RestClientException e) {
 			LOG.warn("no connection with sensors");
 		}
 	}
-
 }
