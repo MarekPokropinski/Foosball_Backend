@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.exceptions.TeamNoExistException;
+import pl.ncdchot.foosball.exceptions.TournamentGameDontExistsException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
@@ -24,7 +25,7 @@ public class TournamentController {
     @GetMapping("/start")
     public ResponseEntity<Long> startGame(
             @RequestParam long[] redTeamUsersID,
-            @RequestParam long[] blueTeamUsersID) throws UserNotExistException, TeamNoExistException, GameNotFoundException {
+            @RequestParam long[] blueTeamUsersID) throws UserNotExistException, TeamNoExistException, GameNotFoundException, TournamentGameDontExistsException {
 
         long id = service.startGame(redTeamUsersID, blueTeamUsersID, new Rules());
         LOG.info("Starting tournament game id: " + id);

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.ncdchot.foosball.database.model.Rules;
 import pl.ncdchot.foosball.exceptions.GameNotFoundException;
 import pl.ncdchot.foosball.exceptions.TeamNoExistException;
+import pl.ncdchot.foosball.exceptions.TournamentGameDontExistsException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.game.TeamColor;
@@ -34,7 +35,7 @@ public class NormalGameController {
             @RequestParam long[] redTeamUsersID,
             @RequestParam long[] blueTeamUsersID,
             @RequestParam(required = false) Integer maxGoal,
-            @RequestParam(required = false) Integer maxTimeInSec) throws TeamNoExistException, GameNotFoundException {
+            @RequestParam(required = false) Integer maxTimeInSec) throws TeamNoExistException, GameNotFoundException, TournamentGameDontExistsException {
 
         Rules gameRules = getRules(maxGoal, maxTimeInSec);
         try {
