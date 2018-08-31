@@ -12,8 +12,8 @@ import pl.ncdchot.foosball.exceptions.TeamNoExistException;
 import pl.ncdchot.foosball.exceptions.UserNotExistException;
 import pl.ncdchot.foosball.game.GameSummary;
 import pl.ncdchot.foosball.modelDTO.FinishTournamentGameDTO;
-import pl.ncdchot.foosball.modelDTO.PrepareToStartGameInTournamentDTO;
-import pl.ncdchot.foosball.modelDTO.TournamentDTO;
+import pl.ncdchot.foosball.modelDTO.CheckTournamentDTO;
+import pl.ncdchot.foosball.modelDTO.GameTournamentDTO;
 import pl.ncdchot.foosball.services.ManagementSystemService;
 
 import java.time.LocalDateTime;
@@ -23,49 +23,50 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
     private static final Logger LOG = Logger.getLogger(TournamentServiceImpl.class);
     private static final String TOURNAMENT_GAME_NAME = "FOOSBALL";
 
+    private CheckTournamentDTO checkTournamentDTO;
 
     @Autowired
     private TournamentSystemServiceImpl tournamentSystemServiceImpl;
-
     @Autowired
     private ManagementSystemService managementSystemService;
     @Autowired
     private GameInTournamentService gameInTournamentService;
 
     @Override
-    public long startGame(long[] redTeamUsers,
-                          long[] blueTeamUsers,
-                          Rules rules) throws UserNotExistException, TeamNoExistException, GameNotFoundException {
-
-        TournamentDTO tournamentDTO = getTournamentGame(redTeamUsers, blueTeamUsers);
+    public long startGame(long[] redTeamUsers, long[] blueTeamUsers, Rules rules) throws UserNotExistException, TeamNoExistException, GameNotFoundException {
+        GameTournamentDTO gameTournamentDTO = getTournamentGame(redTeamUsers, blueTeamUsers);
         long gameID = startFoosballGame(redTeamUsers, blueTeamUsers);
         Game game = getGame(gameID);
-        createTournamentGame(tournamentDTO, game);
+        createTournamentGame(gameTournamentDTO,game);
 
         return gameID;
     }
 
-    private TournamentDTO getTournamentGame(long[] redTeamUsers, long[] blueTeamUsers) throws TeamNoExistException {
-        PrepareToStartGameInTournamentDTO tournamentGame = createTournamentGame(redTeamUsers, blueTeamUsers);
-        return tournamentSystemServiceImpl.findGameInTournament(tournamentGame);
+    private GameTournamentDTO getTournamentGame(long[] redTeamUsers, long[] blueTeamUsers) throws TeamNoExistException {
+        checkTournamentDTO = createTournamentGame(redTeamUsers, blueTeamUsers);
+        return tournamentSystemServiceImpl.findGameInTournament(checkTournamentDTO);
     }
 
     private long startFoosballGame(long[] redTeamUsers, long[] blueTeamUsers) throws UserNotExistException {
         return super.startGame(redTeamUsers, blueTeamUsers, RankedGameServiceImpl.RANKED_GAME_RULES, GameType.TOURNAMENT);
     }
 
-    private void createTournamentGame(TournamentDTO tournamentDTO, Game game) {
-        game.getBlueTeam().setExternalID(Long.valueOf(tournamentDTO.getIdOfFirstPlayer()));
-        game.getRedTeam().setExternalID(Long.valueOf(tournamentDTO.getIdOfSecondPlayer()));
-
-        GameInTournament gameInTournament = new GameInTournament(game, tournamentDTO.getId());
+    private void createTournamentGame(GameTournamentDTO gameTournamentDTO,  Game game) {
+        if (!checkTournamentDTO.getIdOfFirstPlayer().equals(gameTournamentDTO.getIdOfFirstPlayer())) {
+            game.getBlueTeam().setExternalID(Long.valueOf(gameTournamentDTO.getIdOfFirstPlayer()));
+            game.getRedTeam().setExternalID(Long.valueOf(gameTournamentDTO.getIdOfSecondPlayer()));
+        }else {
+            game.getBlueTeam().setExternalID(Long.valueOf(gameTournamentDTO.getIdOfSecondPlayer()));
+            game.getRedTeam().setExternalID(Long.valueOf(gameTournamentDTO.getIdOfFirstPlayer()));
+        }
+        GameInTournament gameInTournament = new GameInTournament(game, gameTournamentDTO.getId());
         gameInTournamentService.save(gameInTournament);
     }
 
-    private PrepareToStartGameInTournamentDTO createTournamentGame(long[] redTeam, long[] blueTeam) throws TeamNoExistException {
+    private CheckTournamentDTO createTournamentGame(long[] redTeam, long[] blueTeam) throws TeamNoExistException {
         String red = managementSystemService.getTournamentTeamID(redTeam);
         String blue = managementSystemService.getTournamentTeamID(blueTeam);
-        return new PrepareToStartGameInTournamentDTO(TOURNAMENT_GAME_NAME, red, blue);
+        return new CheckTournamentDTO(TOURNAMENT_GAME_NAME, red, blue);
     }
 
     @Override
@@ -99,12 +100,11 @@ public class TournamentServiceImpl extends GameWithHistoryServiceImpl {
 
     private String getWinner(Game game) throws GameNotFoundException {
         long winnerID;
-        //TODO : to możę nie zadziałać
         GameSummary gameSummary = getSummary(game.getId());
         if (gameSummary.getBlueScore() > gameSummary.getRedScore()) {
-            winnerID=  game.getBlueTeam().getExternalID();
-        } else if (gameSummary.getBlueScore() < gameSummary.getRedScore()){
-            winnerID =  game.getRedTeam().getExternalID();
+            winnerID = game.getBlueTeam().getExternalID();
+        } else if (gameSummary.getBlueScore() < gameSummary.getRedScore()) {
+            winnerID = game.getRedTeam().getExternalID();
         } else {
             winnerID = 0;
         }

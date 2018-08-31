@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import pl.ncdchot.foosball.modelDTO.CheckTournamentDTO;
 import pl.ncdchot.foosball.modelDTO.FinishTournamentGameDTO;
-import pl.ncdchot.foosball.modelDTO.PrepareToStartGameInTournamentDTO;
-import pl.ncdchot.foosball.modelDTO.TournamentDTO;
+import pl.ncdchot.foosball.modelDTO.GameTournamentDTO;
 import pl.ncdchot.foosball.services.TournamentSystemService;
 
 @Service
@@ -20,16 +20,15 @@ public class TournamentSystemServiceImpl implements TournamentSystemService {
 	private RestTemplate restTemplate;
 
 	@Override
-	public TournamentDTO findGameInTournament(PrepareToStartGameInTournamentDTO prepareToStartGameInTournamentDTO) {
-		String url = TOURNAMENT_URL + "/check";
-		TournamentDTO[] list = restTemplate.postForObject(url, prepareToStartGameInTournamentDTO,
-				TournamentDTO[].class);
+	public GameTournamentDTO findGameInTournament(CheckTournamentDTO checkTournamentDTO) {
+		String url = String.format("%s/check", TOURNAMENT_URL);
+		GameTournamentDTO[] list = restTemplate.postForObject(url, checkTournamentDTO, GameTournamentDTO[].class);
 		return list[FIRST_TOURNAMENT];
 	}
 
 	@Override
 	public void sandResultToTournament(FinishTournamentGameDTO finishTournamentGameDTO) {
-		String url = TOURNAMENT_URL + "/finish";
+		String url = String.format("%s/finish", TOURNAMENT_URL);
 		restTemplate.postForLocation(url, finishTournamentGameDTO);
 	}
 
